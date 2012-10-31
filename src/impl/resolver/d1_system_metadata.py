@@ -19,8 +19,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`sysmeta_resolver`
-==========================
+''':mod:`resolver.d1_system_metadata`
+=====================================
 
 :Synopsis:
  - Resolve DataONE System Metadata.

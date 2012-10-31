@@ -19,11 +19,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`abstract_resolver`
-===========================
+''':mod:`resolver.d1_package`
+=============================
 
 :Synopsis:
- - Resolve the abstract description for a DataONE package.
+ - Resolve a DataONE package.
 :Author: DataONE (Dahl)
 '''
 
@@ -48,8 +48,3 @@ class Resolver(resolver_abc.Resolver):
 
   def resolve(self, path):
     raise PathException('<not implemented>')
-
-    abstxt = self.getAbstract(pid)
-    if offset + size > len(abstxt):
-      size = len(abstxt) - offset
-    return abstxt[offset:offset + size]

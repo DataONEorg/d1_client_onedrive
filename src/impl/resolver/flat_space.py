@@ -19,13 +19,38 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`path_exception`
-========================
+''':mod:`resolver.flat_space`
+=============================
 
 :Synopsis:
- - Type that gets raised as exception for invalid paths.
+ - Resolve a filesystem path that points to a directory to the contents
+   of the directory by querying the query engine.
 :Author: DataONE (Dahl)
+
+directory entries:
+  filename / directory name
+  filename / directory boolean. False = filename, True = directory
+  size in bytes
 '''
 
-class PathException(Exception):
-  pass
+# Stdlib.
+import logging
+import os
+
+# D1.
+
+# App.
+from directory import Directory, DirectoryItem
+import resolver_abc
+
+# Set up logger for this module.
+log = logging.getLogger(__name__)
+
+
+class Resolver(resolver_abc.Resolver):
+  def __init__(self):
+    pass
+
+  def resolve(self, path):
+    directory = Directory()
+    return directory

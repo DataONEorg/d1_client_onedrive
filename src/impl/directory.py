@@ -33,14 +33,19 @@ import collections
 import logging
 import os
 
+# App.
+import os_escape
+
 
 # Set up logger for this module.
 log = logging.getLogger(__name__)
 
 
 class Directory(collections.MutableSequence):
-  def __init__(self):
+  def __init__(self, init_list=None):
     self.list = list()
+    if init_list is not None:
+      self.list.extend(init_list)
 
 
   def __len__(self):
@@ -63,12 +68,17 @@ class Directory(collections.MutableSequence):
     return str(self.list)
 
 
+  def __repr__(self):
+    return str(self)
+  
+  
   def insert(self, i, v):
     self.list.insert(i, v)
 
 
   def names(self):
     return [d.name() for d in self.list]
+
 
 #===============================================================================
 

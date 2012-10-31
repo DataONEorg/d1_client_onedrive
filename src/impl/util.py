@@ -19,35 +19,39 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`preconfigured_search_resolver`
-=======================================
+''':mod:`util`
+==============
 
 :Synopsis:
- - Resolve a filesystem path to a preconfigured solr query.
+ - Misc utilities that don't fit anywhere else.
 :Author: DataONE (Dahl)
 '''
 
 # Stdlib.
+import collections
 import logging
 import os
+import pprint
 
-# D1.
-from directory import Directory, DirectoryItem
-import resolver_abc
+# App.
+import os_escape
+
 
 # Set up logger for this module.
 log = logging.getLogger(__name__)
 
 
-class Resolver(resolver_abc.Resolver):
-  def __init__(self):
-    pass
+#def log_dump(s):
+#  log.debug('{0}: {1}'.format(s, pprint.pformat(eval(s))))
+
+def log_dump(s):
+  log.debug(pprint.pformat(s))
 
 
-  def resolve(self, path):
-    directory = Directory()
-    self.append_parent_and_self_references(directory)
-    directory.append(DirectoryItem('<not implemented>', 0))
-    #directory.append(DirectoryItem('Received path: {0}'.format(path), 0))
-    directory.append(DirectoryItem('Received path: {0}'.format(path.replace('/', '')), 0))
-    return directory
+def string_from_path_array(path):
+  return os.path.sep.join(path)
+
+
+def is_root(path):
+  return path == ['', '']
+

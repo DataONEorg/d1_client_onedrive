@@ -32,6 +32,11 @@
 
 # Stdlib.
 import logging
+import pprint
+
+# App.
+import util
+
 
 # Set up logger for this module.
 log = logging.getLogger(__name__)
@@ -74,6 +79,13 @@ class Cache(dict):
     copyDict._keys = self._keys[:]
     return copyDict
 
+
+  def log_dump(self):
+    log.debug('#' * 79)
+    log.debug('Cache:')
+    util.log_dump(self._data)
+    log.debug('#' * 79)
+    
 
   def delete_oldest_item_if_full(self):
     if len(self) == self.max_items:

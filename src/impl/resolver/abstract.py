@@ -19,18 +19,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`flat_space_resolver`
-=================================
+''':mod:`resolver.abstract`
+===========================
 
 :Synopsis:
- - Resolve a filesystem path that points to a directory to the contents
-   of the directory by querying the query engine.
+ - Resolve the abstract description for a DataONE package.
 :Author: DataONE (Dahl)
-
-directory entries:
-  filename / directory name
-  filename / directory boolean. False = filename, True = directory
-  size in bytes
 '''
 
 # Stdlib.
@@ -51,6 +45,11 @@ class Resolver(resolver_abc.Resolver):
   def __init__(self):
     pass
 
+
   def resolve(self, path):
-    directory = Directory()
-    return directory
+    raise PathException('<not implemented>')
+
+    abstxt = self.getAbstract(pid)
+    if offset + size > len(abstxt):
+      size = len(abstxt) - offset
+    return abstxt[offset:offset + size]

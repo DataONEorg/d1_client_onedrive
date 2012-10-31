@@ -19,11 +19,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`sciobj_resolver`
-=========================
+''':mod:`resolver.preconfigured_search`
+=======================================
 
 :Synopsis:
- - Resolve a DataONE Science Object.
+ - Resolve a filesystem path to a preconfigured solr query.
 :Author: DataONE (Dahl)
 '''
 
@@ -32,10 +32,7 @@ import logging
 import os
 
 # D1.
-
-# App.
 from directory import Directory, DirectoryItem
-import facet_path
 import resolver_abc
 
 # Set up logger for this module.
@@ -48,12 +45,9 @@ class Resolver(resolver_abc.Resolver):
 
 
   def resolve(self, path):
-    raise PathException('<not implemented>')
-
-    #reading the object bytes
-    sysm = self.get_system_metadata(pid)
-    if offset + size > sysm.size:
-      size = sysm.size - offset
-    #trigger loading of the data if necessary
-    self.get(pid)
-    return self.datacache[pid][offset:offset + size]
+    directory = Directory()
+    self.append_parent_and_self_references(directory)
+    directory.append(DirectoryItem('<not implemented>', 0))
+    #directory.append(DirectoryItem('Received path: {0}'.format(path), 0))
+    directory.append(DirectoryItem('Received path: {0}'.format(path.replace('/', '')), 0))
+    return directory

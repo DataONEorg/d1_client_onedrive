@@ -51,7 +51,7 @@ class CommandProcessor(object):
     
 
   def solr_query(self, applied_facets=None):
-    self.solr_client = onedrive_solr_client.SolrClient() # TODO
+    self.solr_client = onedrive_solr_client.SolrClient()
     if applied_facets is None:
       applied_facets = []
     #log.debug('Fields good for faceting: {0}'.format(self.fields_good_for_faceting))
@@ -64,9 +64,10 @@ class CommandProcessor(object):
 
 
   def init_field_names_good_for_faceting(self):
-    all_facet_names = self.d1_client.get_all_searchable_facet_names()
+    candidate_facet_names = \
+      self.d1_client.get_all_searchable_and_returnable_facet_names()
     good = []
-    for f in self.d1_client.get_all_searchable_facet_names():
+    for f in candidate_facet_names:
       if not self.facet_matches_filter(f):
         good.append(f)
     return good

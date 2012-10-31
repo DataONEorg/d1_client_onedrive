@@ -19,8 +19,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`resolver`
-==================
+''':mod:`resolver.resolver_abc`
+===============================
 
 :Synopsis:
  - Base class for the resolvers.
@@ -68,4 +68,4 @@ class Resolver(object):
 
 
   def is_root(self, path):
-    return path == os.path.sep
+    return path == ['', '']

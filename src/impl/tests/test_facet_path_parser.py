@@ -27,7 +27,7 @@
 :Author: DataONE (Dahl)
 
 See the module level docstring in facet_path_parser.py for a description of the
-aspects of facet paths that are being tested here.
+aspects of facet paths that are being tested by this module.
 '''
 
 # Stdlib.
@@ -39,7 +39,7 @@ import unittest
 # D1.
 
 # App.
-sys.path.append('../fuse')
+sys.path.append('..')
 import facet_path_parser
 import path_exception
 
@@ -48,51 +48,13 @@ class TestFacetPathParser(unittest.TestCase):
   def setUp(self):
     self.fp = facet_path_parser.FacetPathParser()
 
-  def test_100__assert_is_abs_path(self):
-    self.assertRaises(AssertionError, self.fp._assert_is_abs_path, '')
-
-
-  def test_101__assert_is_abs_path(self):
-    self.assertRaises(AssertionError, self.fp._assert_is_abs_path, 'a/b')
-
-
-  def test_102__assert_is_abs_path(self):
-    self.assertEqual(None, self.fp._assert_is_abs_path('/'))
-
 
   def test_110__get_tail(self):
-    self.assertEqual(self.fp._get_tail(['/']), '/')
-
-
-  def test_111__get_tail(self):
-    self.assertEqual(self.fp._get_tail('/a'), 'a')
+    self.assertEqual(self.fp._get_tail(['a']), 'a')
 
 
   def test_112__get_tail(self):
-    self.assertEqual(self.fp._get_tail(['a', 'b']), 'b')
-
-
-  def test_120__join_path(self):
-    self.assertEqual(self.fp._join_path(['a', 'b', 'c']), 'a/b/c')
-
-
-  def test_130__split_path_and_strip_empty(self):
-    self.assertEqual(self.fp._split_path_and_strip_empty('/'), [])
-
-
-  def test_131__split_path_and_strip_empty(self):
-    self.assertEqual(self.fp._split_path_and_strip_empty('/a'), ['a'])
-
-
-  def test_132__split_path_and_strip_empty(self):
-    self.assertEqual(self.fp._split_path_and_strip_empty('/a/'), ['a'])
-
-
-  def test_133__split_path_and_strip_empty(self):
-    self.assertEqual(self.fp._split_path_and_strip_empty('/a/b'), ['a', 'b'])
-
-  def test_134__split_path_and_strip_empty(self):
-    self.assertEqual(self.fp._split_path_and_strip_empty('/a/b/'), ['a', 'b'])
+    self.assertEqual(self.fp._get_tail(['a', 'b', 'c']), 'c')
 
 
   def test_140_is_facet_value(self):
@@ -132,7 +94,7 @@ class TestFacetPathParser(unittest.TestCase):
 
 
   def test_180_is_only_object_elements(self):
-    self.assertTrue(self.fp._is_only_object_elements(['a','b']))
+    self.assertTrue(self.fp._is_only_object_elements(['a', 'b']))
 
 
   def test_181_is_only_object_elements(self):
@@ -242,20 +204,13 @@ class TestFacetPathParser(unittest.TestCase):
     self.assertEqual(('abc', 'def'), self.fp.undecorate_facet(('@abc', '#def')))
 
 
-  def test_280_undecorated_tail(self):
-    self.assertEqual(self.fp.undecorated_tail('/'), '')
-
-
   def test_281_undecorated_tail(self):
-    self.assertEqual(self.fp.undecorated_tail('/@abc'), 'abc')
+    self.assertEqual(self.fp.undecorated_tail(['abc', '@def']), 'def')
 
-
-  def test_282_undecorated_tail(self):
-    self.assertEqual(self.fp.undecorated_tail('/@abc/#def'), 'def')
 
 
   def test_283_undecorated_tail(self):
-    self.assertEqual(self.fp.undecorated_tail('/@abc/#def/test'), 'test')
+    self.assertEqual(self.fp.undecorated_tail(['abc', '@def', 'ghi']), 'ghi')
 
 
   def test_300_undecorate_facets(self):
@@ -282,41 +237,42 @@ class TestFacetPathParser(unittest.TestCase):
     self.assertEqual(f[1], 'cd')
 
 
-  #def test_310_decorate_facets(self):
+  #def _test_310_decorate_facets(self):
   #  p = self.fp.decorate_facets(())
   #  self.assertEqual(p, '')
   #
   #
-  #def test_311_decorate_facets(self):
+  #def _test_311_decorate_facets(self):
   #  p = self.fp.decorate_facets(['a', 'b', 'c', 'd'])
   #  self.assertEqual(p, '@a/#b/@c/#d')
 
   def test_290_split_path_to_facet_and_object_sections(self):
-    f, o = self.fp.split_path_to_facet_and_object_sections('/')
+    f, o = self.fp.split_path_to_facet_and_object_sections([])
     self.assertEqual(f, [])
-    self.assertEqual(o, [''])
+    self.assertEqual(o, [])
+
 
   def test_291_split_path_to_facet_and_object_sections(self):
-    f, o = self.fp.split_path_to_facet_and_object_sections('/a')
+    f, o = self.fp.split_path_to_facet_and_object_sections(['a'])
     self.assertEqual(f, [])
     self.assertEqual(o, ['a'])
 
 
   def test_292_split_path_to_facet_and_object_sections(self):
-    f, o = self.fp.split_path_to_facet_and_object_sections('/@a')
+    f, o = self.fp.split_path_to_facet_and_object_sections(['@a'])
     self.assertEqual(f, ['@a'])
     self.assertEqual(o, [])
 
 
   def test_293_split_path_to_facet_and_object_sections(self):
-    f, o = self.fp.split_path_to_facet_and_object_sections('/@a/#b/c/d')
+    f, o = self.fp.split_path_to_facet_and_object_sections(['@a', '#b', 'c', 'd'])
     self.assertEqual(f, ['@a', '#b'])
     self.assertEqual(o, ['c', 'd'])
 
 
   def test_294_split_path_to_facet_and_object_sections(self):
     try:
-      f, o = self.fp.split_path_to_facet_and_object_sections('/@a/#b/c/#d')
+      f, o = self.fp.split_path_to_facet_and_object_sections(['@a', '#b', 'c', '#d'])
     except path_exception.PathException as e:
       self.assertEqual(str(e), 'Expected facet element. Got: c')
     else:
@@ -325,7 +281,7 @@ class TestFacetPathParser(unittest.TestCase):
 
   def test_295_split_path_to_facet_and_object_sections(self):
     try:
-      f, o = self.fp.split_path_to_facet_and_object_sections('/a/b/@c')
+      f, o = self.fp.split_path_to_facet_and_object_sections(['a', 'b', '@c'])
     except path_exception.PathException as e:
       self.assertEqual(str(e), 'Expected facet element. Got: a')
     else:

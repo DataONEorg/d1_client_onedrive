@@ -19,7 +19,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`faceted_search_resolver`
+''':mod:`resolver.faceted_search`
 =================================
 
 :Synopsis:
@@ -27,10 +27,15 @@
    of the directory by querying the query engine.
 :Author: DataONE (Dahl)
 
-directory entries:
-  filename / directory name
-  filename / directory boolean. False = filename, True = directory
-  size in bytes
+- A facet is a tuple containing a facet name and a facet value.
+- A facet name is a single string.
+- A valid facet name is a single string that matches one of the "good for
+  faceting" strings.
+- A facet value is a single string.
+- A facet value only makes sense in the context of a facet name.
+- A valid facet value is a single string that matches one of the facet values
+  that a Solr search returned for the facet name in which context the facet
+  value is used.
 '''
 
 # Stdlib.
@@ -45,12 +50,10 @@ import command_processor
 from directory import Directory, DirectoryItem
 import facet_path_parser
 import resolver_abc
+import util
 
 # Set up logger for this module.
 log = logging.getLogger(__name__)
-
-def q(s):
-  log.debug('{0}: {1}'.format(s, pprint.pformat(eval(s))))
 
 
 class Resolver(resolver_abc.Resolver):
@@ -60,27 +63,42 @@ class Resolver(resolver_abc.Resolver):
     
 
   def resolve(self, path):
-    log.debug('Resolve: {0}'.format(path))
+    log.debug('Resolve: {0}'.format(util.string_from_path_array(path)))
 
     directory = Directory()
     
     self.append_parent_and_self_references(directory)
 
-    facet_section, object_section = self.facet_path_parser\
-      .split_path_to_facet_and_object_sections(path)
+    facet_section = self.facet_path_parser \
+      .split_path_to_facet_and_object_sections(path)[0]
 
     #log.debug('Facet path: {0}'.format(facet_section))
-    
-    applied_facets = self.facet_path_parser.facets_from_path(path)
-    log.debug('Applied facets: {0}'.format(applied_facets))
-    
-    unapplied_facet_counts, entries = self.command_processor.solr_query(applied_facets=None)
 
-    print unapplied_facet_counts
+        
+    facets_in_path = self.facet_path_parser.facets_from_path(path)
+    if len(facets_in_path) and facets_in_path[-1][1] is None:
+      applied_facets = facets_in_path[:-1]
+    else:
+      applied_facets = facets_in_path[:]
 
+    unapplied_facet_counts, entries = self.command_processor.solr_query(applied_facets=applied_facets)
+
+    log.debug('0'*100)
+    util.log_dump(applied_facets)
+    log.debug('0'*100)
+    
+
+    log.debug('1'*100)
+    util.log_dump(unapplied_facet_counts)
+    log.debug('1'*100)
+    log.debug('2'*100)
+    util.log_dump(entries)
+    log.debug('2'*100)
+
+  
     # Return facet values.
-    if len(applied_facets) and applied_facets[-1][1] is None:
-      for u in unapplied_facet_counts[applied_facets[-1][0]]['values']:
+    if len(facets_in_path) and facets_in_path[-1][1] is None:
+      for u in unapplied_facet_counts[facets_in_path[-1][0]]['values']:
         print u
         directory.append(DirectoryItem(self.facet_path_parser.decorate_facet_value(u[0]), u[1], True))
       return directory
@@ -136,6 +154,11 @@ class Resolver(resolver_abc.Resolver):
     #if self.n_path_components_after_facets(path) == 1:
     #  return self.resolve_package_dir(path)
     #return self.invalid_directory_error()
+
+
+  def facet_is_open(self, facet):
+    return facet[1] is None
+#    if len(facets_in_path) and facets_in_path[-1][1] is None:
 
 
   def append_facet_directories(directory, facet_section):

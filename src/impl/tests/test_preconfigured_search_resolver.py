@@ -19,7 +19,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`test_preconfigured_search_resolver`
+''':mod:`test_preconfigured_search`
 ============================================
 
 :Synopsis:
@@ -36,11 +36,11 @@ import unittest
 
 # D1.
 sys.path.append('../fuse')
-import preconfigured_search_resolver
+import preconfigured_search
 
 class TestPreconfiguredSearchResolver(unittest.TestCase):
   def setUp(self):
-    self.p = preconfigured_search_resolver.Resolver()
+    self.p = preconfigured_search.Resolver()
 
 #===============================================================================
 
