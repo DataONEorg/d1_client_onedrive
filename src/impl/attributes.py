@@ -19,41 +19,50 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`resolver.faceted_search_selector`
-==========================================
+''':mod:`attributes`
+====================
 
 :Synopsis:
- - Disable faceted searching once an object has been selected.
+ - Hold the size and other attributes for a file or folder.
 :Author: DataONE (Dahl)
 '''
 
 # Stdlib.
+import collections
 import logging
 import os
 
-# D1.
-
 # App.
-from directory import Directory, DirectoryItem
-import facet_path_parser
-import resolver_abc
+import os_escape
+
 
 # Set up logger for this module.
 log = logging.getLogger(__name__)
 
 
-class Resolver(resolver_abc.Resolver):
-  def __init__(self):
-    self.facet_path_parser = facet_path_parser.FacetPathParser()
+class Attributes(object):
+  def __init__(self, size=0, date=None, is_dir=False):
+    self.size_ = size
+    self.date_ = date
+    self.is_dir_ = is_dir
 
 
-  def resolve(self, path):
-    facet_section, object_section = self.facet_path_parser \
-      .split_path_to_facet_and_object_sections(path)
-    directory = Directory()
-    self.append_parent_and_self_references(directory)
-    if len(object_section):
-      self.append_package_items(directory, object_section)
-    else:
-      self.append_facet_directories(directory, facet_section)
-    return directory
+  def __eq__(self, other):
+    return self.__dict__ == other.__dict__
+
+
+  def __repr__(self):
+    return '{0}({1})'.format(self.__class__, self.__dict__)
+
+
+  def size(self):
+    return self.size_
+
+
+  def date(self):
+    return self.date_
+  
+
+  def is_dir(self):
+    return self.is_dir_
+  

@@ -34,7 +34,9 @@ import os
 # D1.
 
 # App.
-from directory import Directory, DirectoryItem
+import directory
+import directory_item
+import path_exception
 import resolver_abc
 
 # Set up logger for this module.
@@ -46,8 +48,12 @@ class Resolver(resolver_abc.Resolver):
     pass
 
 
-  def resolve(self, path):
-    raise PathException('Not implemented')
+  def get_attributes(self, path):
+    raise path_exception.PathException('<not implemented>')
+
+
+  def get_directory(self, path):
+    raise path_exception.PathException('<not implemented>')
 
     ##reading the system metadata
     #obj = self.get_system_metadata(pid)

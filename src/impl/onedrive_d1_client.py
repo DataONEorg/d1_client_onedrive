@@ -78,6 +78,8 @@ class D1Client(object):
       'solr')
 
 
+  def describe(self, pid):
+    return self.client.describe(pid)
 
 
 # USED

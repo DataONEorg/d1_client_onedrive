@@ -93,97 +93,66 @@ class FacetPathParser(object):
 
 
   def facets_from_path(self, path):
-    if util.is_root(path):
-      return []
-    return self.facets_from_facet_list(path)
+    pairs = self._pair_path_elements(path)
+    return self._undecorate_pairs(pairs)
+
+  # Private.  
+  
+  def _pair_path_elements(self, path):
+    p = path[:]
+    p.append(None)
+    return zip(p[::2], p[1::2])
+
+
+  def _undecorate_pairs(self, pairs):
+    return [self._undecorate_facet(p) for p in pairs]
   
 
-  def undecorate_facets(self, path):
-    facets = []
-    for i, e in enumerate(path):
-      if self._is_facet_name_position(i):
-        facets.append(self.undecorate_facet_name(e))
-      else:
-        facets.append(self.undecorate_facet_value(e))
-    return facets
+#  def decorate_facet(self, facet):
+#    return self.decorate_facet_name(facet[0]), \
+#      self.decorate_facet_value(facet[1])
 
 
-  def facets_from_facet_list(self, decorated_path):
-    p = self.undecorate_facets(decorated_path)
-    facets = []
-    print p
-    for i in range(0, len(p) - 1, 2):
-      print i
-      facets.append((p[i], p[i + 1]))
-    if self._is_facet_name_position(len(p) - 1):
-      facets.append((p[-1], None))
-    return facets
-
-
-  #def decorate_facets(self, facets):
-  #  p = []
-  #  for i, e in enumerate(facets):
-  #    if self._is_facet_name_position(i):
-  #      p.append(self.decorate_facet_name(e))
-  #    else:
-  #      p.append(self.decorate_facet_value(e))
-  #  return self._join_path(p)
-
-
-  def undecorated_tail(self, path):
-    e = self._get_tail(path)
-    if self.is_facet_name(e):
-      return self.undecorate_facet_name(e)
-    if self.is_facet_value(e):
-      return self.undecorate_facet_value(e)
-    return e
-
-
-  def decorate_facet(self, facet):
-    return self.decorate_facet_name(facet[0]), \
-      self.decorate_facet_value(facet[1])
-
-
-  def undecorate_facet(self, facet):
+  def _undecorate_facet(self, facet):
     return self.undecorate_facet_name(facet[0]), \
       self.undecorate_facet_value(facet[1])
 
 
-  def decorate_facet_name(self, facet_name):
-    assert(not self.is_facet_name(facet_name))
-    return self.facet_name_decorator + facet_name
+#  def decorate_facet_name(self, facet_name):
+#    assert(not self._is_facet_name(facet_name))
+#    return self.facet_name_decorator + facet_name
 
 
   def undecorate_facet_name(self, facet_name):
-    assert(self.is_facet_name(facet_name))
+    self._raise_if_not_facet_name(facet_name)
     return facet_name[1:]
 
 
-  def decorate_facet_value(self, facet_value):
-    assert(not self.is_facet_value(facet_value))
-    return self.facet_value_decorator + facet_value
+#  def decorate_facet_value(self, facet_value):
+#    assert(not self._is_facet_value(facet_value))
+#    return self.facet_value_decorator + facet_value
 
 
   def undecorate_facet_value(self, facet_value):
-    assert(self.is_facet_value(facet_value))
+    if facet_value is None:
+      return None
+    self._raise_if_not_facet_value(facet_value)
     return facet_value[1:]
 
 
-  def dir_contains_facet_names(self, path):
-    if util.is_root(path):
-      return True
-    e = self._get_tail(path)
-    return self.is_facet_value(e)
+#  def dir_contains_facet_names(self, path):
+#    if util.is_root(path):
+#      return True
+#    e = self._get_tail(path)
+#    return self._is_facet_value(e)
 
 
-  def dir_contains_facet_values(self, path):
-    if util.is_root(path):
-      return False
-    e = self._get_tail(path)
-    return self.is_facet_name(e)
+#  def dir_contains_facet_values(self, path):
+#    if util.is_root(path):
+#      return False
+#    e = self._get_tail(path)
+#    return self._is_facet_name(e)
 
-
-  # ----------------------------------------------------------------------------
 
   def _index_of_last_facet_name_or_value(self, path):
     last = None
@@ -193,28 +162,28 @@ class FacetPathParser(object):
     return last
 
 
-  #def path_before_facets(self, path):
-  #  self._assert_is_abs_path(path)
-  #  i = self._find_index_of_first_facet(path)
-  #  if i is None:
-  #    return None
-  #  return os.path.sep.join(path.split(os.path.sep)[:i + 1])
+#  def path_before_facets(self, path):
+#    self._assert_is_abs_path(path)
+#    i = self._find_index_of_first_facet(path)
+#    if i is None:
+#      return None
+#    return os.path.sep.join(path.split(os.path.sep)[:i + 1])
 
 
-  #def path_after_facets(self, path):
-  #  i = self._find_last_facet(path)
-  #  if i is None:
-  #    path = self._split_path_and_strip_empty(path)
-  #  else:
-  #    path = self._split_path_and_strip_empty(path)[i + 2:]
-  #  if not len(path):
-  #    return '/'
-  #  return os.path.join(*path)
+#  def path_after_facets(self, path):
+#    i = self._find_last_facet(path)
+#    if i is None:
+#      path = self._split_path_and_strip_empty(path)
+#    else:
+#      path = self._split_path_and_strip_empty(path)[i + 2:]
+#    if not len(path):
+#      return '/'
+#    return os.path.join(*path)
 
 
 
-  #def has_one_or_more_facets(self, path):
-  #  return self._find_index_of_first_facet(path) is not None
+#  def has_one_or_more_facets(self, path):
+#    return self._find_index_of_first_facet(path) is not None
 
 
   def _raise_if_invalid_facet_section(self, path):
@@ -230,25 +199,31 @@ class FacetPathParser(object):
 
 
   def _raise_if_facet_section_is_incorrectly_ordered(self, path):
-    facet_name_value_toggle = True
-    for e in path:
-      if facet_name_value_toggle:
-        if not self.is_facet_name(e):
-          raise path_exception.PathException(
-            'Expected facet name. Got: {0}'.format(e))
+    for i, e in enumerate(path):
+      if self._is_facet_name_position(i):
+        self._raise_if_not_facet_name(e)
       else:
-        if not self.is_facet_value(e):
-          raise path_exception.PathException(
-            'Expected facet value. Got: {0}'.format(e))
-      facet_name_value_toggle = not facet_name_value_toggle
+        self._raise_if_not_facet_value(e)
+
+
+  def _raise_if_not_facet_name(self, e):
+    if not self._is_facet_name(e):
+      raise path_exception.PathException(
+        'Expected facet name. Got: {0}'.format(e))
+      
+  
+  def _raise_if_not_facet_value(self, e):
+    if not self._is_facet_value(e):
+      raise path_exception.PathException(
+        'Expected facet value. Got: {0}'.format(e))
 
 
   def _is_facet_name_position(self, i):
     return not bool(i & 1)
 
 
-  def _is_facet_value_position(self, i):
-    return not self._is_facet_name_position(i)
+#  def _is_facet_value_position(self, i):
+#    return not self._is_facet_name_position(i)
 
 
   def _raise_if_invalid_object_section(self, path):
@@ -262,58 +237,58 @@ class FacetPathParser(object):
           'Expect object element. Got: {0}'.format(e))
 
 
-  def _is_only_facet_elements(self, path):
-    for e in path:
-      if not self._is_facet_name_or_value(e):
-        return False
-    return True
+#  def _is_only_facet_elements(self, path):
+#    for e in path:
+#      if not self._is_facet_name_or_value(e):
+#        return False
+#    return True
 
 
-  def _is_only_object_elements(self, path):
-    for e in path:
-      if self._is_facet_name_or_value(e):
-        return False
-    return True
+#  def _is_only_object_elements(self, path):
+#    for e in path:
+#      if self._is_facet_name_or_value(e):
+#        return False
+#    return True
 
     #print self._find_index_of_first_facet(path)
     #return self._find_index_of_first_facet(path) is None
 
 
-  #def _find_index_of_first_facet(self, path):
-  #  for i, f in enumerate(path[:-1]):
-  #    if self.is_facet((f, path[i + 1])):
-  #      return i
+#  def _find_index_of_first_facet(self, path):
+#    for i, f in enumerate(path[:-1]):
+#      if self.is_facet((f, path[i + 1])):
+#        return i
 
 
-  #def _find_index_of_last_facet(self, path):
-  #  last = None
-  #  for i, f in enumerate(path[:-1]):
-  #    if self.is_facet((f, path[i + 1])):
-  #      last = i
-  #  return last
-  #
+#  def _find_index_of_last_facet(self, path):
+#    last = None
+#    for i, f in enumerate(path[:-1]):
+#      if self.is_facet((f, path[i + 1])):
+#        last = i
+#    return last
 
-  def is_facet(self, facet):
-    return self.is_facet_name(facet[0]) and self.is_facet_value(facet[1])
+
+#  def is_facet(self, facet):
+#    return self._is_facet_name(facet[0]) and self._is_facet_value(facet[1])
 
 
   def _is_facet_name_or_value(self, e):
-    return self.is_facet_name(e) or self.is_facet_value(e)
+    return self._is_facet_name(e) or self._is_facet_value(e)
 
 
-  def is_facet_name(self, e):
-    if not len(e):
+  def _is_facet_name(self, e):
+    if e is None or not len(e):
       return False
     return e[0] == self.facet_name_decorator
 
 
-  def is_facet_value(self, e):
-    if not len(e):
+  def _is_facet_value(self, e):
+    if e is None or not len(e):
       return False
     return e[0] == self.facet_value_decorator
 
 
-  def _get_tail(self, path):
-    if not len(path):
-      return None
-    return path[-1]
+#  def _get_tail(self, path):
+#    if not len(path):
+#      return None
+#    return path[-1]

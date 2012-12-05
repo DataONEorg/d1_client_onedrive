@@ -33,8 +33,6 @@ import HTMLParser
 import logging
 import os
 import pprint
-import query_engine_description
-import settings
 import socket
 import urllib
 import urlparse
@@ -44,6 +42,9 @@ import d1_client.solr_client
 import d1_common.const
 import d1_common.url
 
+# App.
+import settings
+import query_engine_description
 
 
 # Set up logger for this module.
@@ -96,12 +97,11 @@ class SolrClient(object):
   # - includes a list of all the unapplied facets and their counts, for counts > 0
   def faceted_search(self, all_facet_names, applied_facets):
     unapplied_facets = self.get_unapplied_facets(all_facet_names, applied_facets)
-    log.debug('4'*100)
-    log.debug(applied_facets)
     unapplied_facet_fields = self.facet_fields_from_facet_names(unapplied_facets)
     query_params = [
       ('q', '*:*'),
-      ('rows', '3'),
+      ('fq', self.format_filter_query(applied_facets)),
+      ('rows', settings.MAX_OBJECTS_IN_DIRECTORY),
       ('indent', 'on'),
       ('facet', 'true'),
       ('facet.limit', '5'),
@@ -116,6 +116,10 @@ class SolrClient(object):
     unapplied_facet_counts, entries = self.parse_result_dict(response)
     return unapplied_facet_counts, entries
 
+
+  def format_filter_query(self, applied_facets):
+    return ' AND '.join(['{0}:{1}'.format(f[0], 
+      self.escape_query_term(f[1])) for f in applied_facets])
 
 #  def create_filter_query(self, all_facet_names, applied_facets, unapplied_facets):
 #    facet_settings = ['rows=100', 'facet=true', 'facet.limit=10',
@@ -152,6 +156,7 @@ class SolrClient(object):
   def get_solr_path(self, base_url, relative_solr_path):
     base = urlparse.urlsplit(base_url).path
     return '/' + d1_common.url.joinPathElements(base, relative_solr_path) + '/'
+
 
   def get_solr_base(self, base_url, relative_solr_path):
      return d1_common.url.joinPathElements(base_url, relative_solr_path) + '/'
@@ -195,7 +200,7 @@ class SolrClient(object):
     facet_counts = d['facet_counts']['facet_fields']
     facets = {}
     for facet_name, facet_value_counts in facet_counts.items():
-      facet_count_tuples = self.pairs_from_list(facet_value_counts)
+      facet_count_tuples = self.pair_list_elements(facet_value_counts)
       count = 0
       for facet in facet_count_tuples:
         count += int(facet[1])
@@ -207,11 +212,16 @@ class SolrClient(object):
     return facets 
   
   
-  def pairs_from_list(self, list_with_pairs):
-    pairs = []
-    for i in range(0, len(list_with_pairs), 2):
-      pairs.append((urllib.quote(list_with_pairs[i], safe=''), list_with_pairs[i + 1]))
-    return pairs
+  def pair_list_elements(self, list_with_pairs):
+    p = list_with_pairs[:]
+    p.append(None)
+    return zip(p[::2], p[1::2])
+
+#    pairs = []
+#    for i in range(0, len(list_with_pairs), 2):
+#      #pairs.append((urllib.quote(list_with_pairs[i], safe=''), list_with_pairs[i + 1]))
+#      pairs.append((list_with_pairs[i], list_with_pairs[i + 1]))
+#    return pairs
   
   
   def get_directory_entries(self, d):

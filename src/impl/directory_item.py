@@ -19,63 +19,54 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`resolver.resolver_abc`
-===============================
+''':mod:`directory_item`
+========================
 
 :Synopsis:
- - Base class for the resolvers.
- - The resolvers are a class of objects that translate filesystem paths to
-   their corresponding files and folders.
+ - Hold the name, size and is_dir flag for a file or folder.
 :Author: DataONE (Dahl)
 '''
 
 # Stdlib.
-import abc
+import collections
 import logging
 import os
 
 # App.
-import directory
-import directory_item
+import os_escape
 
 
 # Set up logger for this module.
 log = logging.getLogger(__name__)
 
 
-class Resolver(object):
-  __metaclass__ = abc.ABCMeta
+class DirectoryItem(object):
+  def __init__(self, name, size=0, is_dir=False):
+    self.name_ = name
+    self.size_ = size
+    self.is_dir_ = is_dir
 
 
-  def __init__(self):
-    pass
+  def __eq__(self, other):
+    return self.__dict__ == other.__dict__
 
 
-  @abc.abstractmethod
-  def get_attributes(self, path):
-    pass
+  def __str__(self):
+    return 'DirectoryItem({0}, {1}, {2})'.format(repr(self.name_), self.size_,
+                                                 self.is_dir_)
 
 
-  @abc.abstractmethod
-  def get_directory(self, path):
-    pass
+  def __repr__(self):
+    return str(self)
 
 
-  #def invalid_directory_error(self):
-  #  directory = Directory()
-  #  self.append_parent_and_self_references(directory)
-  #  directory.append(DirectoryItem('<non-existing directory>', 0, False))
-  #  return directory
+  def name(self):
+    return self.name_
 
 
-  def append_parent_and_self_references(self, directory):
-    directory.append(directory_item.DirectoryItem('.'))
-    directory.append(directory_item.DirectoryItem('..'))
+  def size(self):
+    return self.size_
 
 
-  def is_root(self, path):
-    return path == ['', '']
-
-
-  def _is_root(self, path):
-    return not len(path)
+  def is_dir(self):
+    return self.is_dir_
