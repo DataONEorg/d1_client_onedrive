@@ -97,6 +97,12 @@ class RootResolver(resolver_abc.Resolver):
     #self._cache_error_file_path(p, e)
     #return self._render_path_exception_as_file(e)
 
+
+  def read_file(self, path, size, offset):
+    log.debug('read_file: {0}, {1}, {2}'.format(path, size, offset))
+    p = self._split_and_unescape_path(path)
+    return self._read_file(p, size, offset)
+
   # Private.
 
   def _get_attributes(self, path):
@@ -119,6 +125,15 @@ class RootResolver(resolver_abc.Resolver):
       return self._render_error_message_as_file(error_message)
     dir = self._dispatch_get_directory(path)
     return self._escape_directory_entries(dir)
+
+
+  def _read_file(self, path, size, offset):
+#    if self._is_root(path):
+#      return self._resolve_root()
+#    if self._is_cached_error_folder_path(path):
+#      error_message = self._get_cached_error_message(path)
+#      return self._render_error_message_as_file(error_message)
+    return self._dispatch_read_file(path, size, offset)
 
 
   def _is_cached_error_folder_path(self, path):
@@ -160,6 +175,10 @@ class RootResolver(resolver_abc.Resolver):
 
   def _dispatch_get_directory(self, path):
     return self._resolver_lookup(path).get_directory(path[1:])
+
+
+  def _dispatch_read_file(self, path, size, offset):
+    return self._resolver_lookup(path).read_file(path[1:], size, offset)
 
 
 #  def _get_directory(self, path):

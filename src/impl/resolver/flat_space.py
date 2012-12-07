@@ -60,6 +60,9 @@ class Resolver(resolver_abc.Resolver):
 
 
   def get_attributes(self, path):
+    log.debug('get_attributes: {0}'.format(util.string_from_path_elements(
+      path)))
+
     if not len(path):
       return attributes.Attributes(is_dir=True)
     
@@ -70,7 +73,20 @@ class Resolver(resolver_abc.Resolver):
 
 
   def get_directory(self, path):
+    log.debug('get_directory: {0}'.format(util.string_from_path_elements(
+      path)))
+
     if not len(path):
       return [directory_item.DirectoryItem(how_to_use)]
     
     return self.resource_map_resolver.get_directory(path)
+
+
+  def read_file(self, path, size, offset):
+    log.debug('read_file: {0}, {1}, {2}'.format(util.string_from_path_elements(
+      path), size, offset))
+
+    if not len(path):
+      return [directory_item.DirectoryItem(how_to_use)]
+    
+    return self.resource_map_resolver.read_file(path, size, offset)
