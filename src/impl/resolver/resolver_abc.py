@@ -79,3 +79,7 @@ class Resolver(object):
 
   def _is_root(self, path):
     return not len(path)
+
+
+#  def _is_root(self, path):
+#    return path == ['']

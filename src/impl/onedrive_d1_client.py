@@ -87,7 +87,6 @@ class D1Client(object):
       raise path_exception.PathException(e.description)
 
 
-
   def get_science_object(self, pid):
     try:
       d1client = d1_client.d1client.DataONEClient(cnBaseUrl=self.base_url)

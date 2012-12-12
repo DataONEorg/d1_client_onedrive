@@ -94,12 +94,12 @@ class Resolver(resolver_abc.Resolver):
     # /pid/pid.ext
     # /pid/system.xml
 
-    # The calling resolver must not strip the PID off the path.
+    # The parent resolver must not strip the PID off the path.
     assert(len(path))
 
     pid = path[0]
 
-    description = self.command_processor.get_and_cache_description(pid)
+    description = self.command_processor.get_description_through_cache(pid)
 
     # This resolver does not call out to any other resolves. Any path that
     # is deeper than two levels, and any path that is one level, but does
@@ -116,8 +116,8 @@ class Resolver(resolver_abc.Resolver):
                                      date=description['last-modified'])
 
       if path[1] == 'system.xml':
-        sys_meta = self.command_processor.get_system_metadata(pid)
-        return attributes.Attributes(size=len(sys_meta.toxml()),
+        sys_meta_xml = self.command_processor.get_system_metadata_through_cache(pid)[1]
+        return attributes.Attributes(size=len(sys_meta_xml),
                                      date=description['last-modified'])
   
     self._raise_invalid_path()      
@@ -125,7 +125,7 @@ class Resolver(resolver_abc.Resolver):
 
   def _get_directory(self, path):
     pid = path[0]
-    description = self.command_processor.get_and_cache_description(pid)
+    description = self.command_processor.get_description_through_cache(pid)
     return [
       directory_item.DirectoryItem(self._get_pid_filename(pid, description)),    
       directory_item.DirectoryItem('system.xml'),
@@ -134,14 +134,17 @@ class Resolver(resolver_abc.Resolver):
   
 
   def _read_file(self, path, size, offset):
-    if path[1] == 'system.xml':
-      sys_meta = self.command_processor.get_system_metadata(path[0]).toxml()
-      return sys_meta[offset:offset + size]
+    pid = path[0]
+    filename = path[1]
+    
+    if filename == 'system.xml':
+      sys_meta_xml = self.command_processor.get_system_metadata_through_cache(pid)[1]
+      return sys_meta_xml[offset:offset + size]
 
-    description = self.command_processor.get_and_cache_description(path[0])
+    description = self.command_processor.get_description_through_cache(pid)
 
-    if path[1] == self._get_pid_filename(path[0], description):
-      sci_obj = self.command_processor.get_science_object(path[0])
+    if filename == self._get_pid_filename(pid, description):
+      sci_obj = self.command_processor.get_science_object_through_cache(pid)
       return sci_obj[offset:offset + size]
 
     self._raise_invalid_path()      

@@ -168,7 +168,7 @@ class Resolver(resolver_abc.Resolver):
       return self._get_facet_value_attribute(path_facets)
     
     
-  def get_directory(self, path):    
+  def get_directory(self, path, preconfigured_query=None):    
     # the directory will typically be in the cache. already retrieved by
     # get_attributes, since get_attributes() needs to know how many items
     # there are in the directory, in order to return that count.    
@@ -183,7 +183,8 @@ class Resolver(resolver_abc.Resolver):
     if len(object_section):
       return self.resource_map_resolver.get_directory(object_section)
     
-    return self._get_directory(path)
+    return self._get_directory(path, preconfigured_query)
+  
 
   def read_file(self, path, size, offset):
     log.debug('read_file: {0}, {1}, {2}'.format(util.string_from_path_elements(
@@ -247,7 +248,7 @@ class Resolver(resolver_abc.Resolver):
     return len(sci_objs)
       
     
-  def _get_directory(self, path):
+  def _get_directory(self, path, preconfigured_query):
     dir = directory.Directory()
     self.append_parent_and_self_references(dir)
 
@@ -255,7 +256,7 @@ class Resolver(resolver_abc.Resolver):
     applied_facets = self._get_applied_facets(path_facets)
 
     unapplied_facet_counts, sci_objs = self.command_processor.solr_query(
-      applied_facets=applied_facets)
+      applied_facets=applied_facets, filter_queries=preconfigured_query)
 
     if self._is_path_to_undefined_facet(path_facets):
       dir.extend(self._get_facet_values(unapplied_facet_counts,
