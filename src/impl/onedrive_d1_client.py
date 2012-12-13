@@ -29,6 +29,7 @@
 
 # Stdlib.
 import logging
+import ssl
 
 # D1.
 import d1_common
@@ -85,6 +86,8 @@ class D1Client(object):
       return self.client.describe(pid)
     except d1_common.types.exceptions.DataONEException as e:
       raise path_exception.PathException(e.description)
+    except (ssl.SSLError, Exception) as e:
+      raise path_exception.PathException(str(e))
 
 
   def get_science_object(self, pid):
@@ -93,13 +96,16 @@ class D1Client(object):
       return d1client.get(pid)
     except d1_common.types.exceptions.DataONEException as e:
       raise path_exception.PathException(e.description)
-
+    except (ssl.SSLError, Exception) as e:
+      raise path_exception.PathException(str(e))
 
   def get_system_metadata(self, pid):
     try:
       return self.client.getSystemMetadata(pid)
     except d1_common.types.exceptions.DataONEException as e:
       raise path_exception.PathException(e.description)
+    except (ssl.SSLError, Exception) as e:
+      raise path_exception.PathException(str(e))
 
 
 # USED
