@@ -106,7 +106,6 @@ class CommandProcessor(singleton.Singleton):
 
   def _cache_object_info(self, res):
     for o in res[1]:
-      o['date'] = d1_common.date_time.from_iso8601(o['date'])
       self.object_description_cache2[o['pid']] = o
 
 
@@ -116,10 +115,7 @@ class CommandProcessor(singleton.Singleton):
     except KeyError:
       pass
     o = self.solr_client.get_object_info(pid)
-    self.object_description_cache2[o['pid']] = o
-#    dict(
-#      format_id = o['format_id'], , o['size'],
-#                                                  o['date'])
+    self.object_description_cache2[pid] = o
     return o
 
 
@@ -142,7 +138,6 @@ class CommandProcessor(singleton.Singleton):
       d1_client.get_all_searchable_and_returnable_facet_names()
     good = []
     for f in candidate_facet_names:
-      #if not self.facet_matches_filter(f):
       if self.facet_matches_filter(f):
         good.append(f)
     return good
