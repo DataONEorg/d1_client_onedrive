@@ -114,7 +114,8 @@ class SolrClient(object):
       ('facet.sort', 'count'),
       #('facet.count', 'sort'),
       #('group.facet', 'true'),
-      ('wt', 'python'),]
+      ('wt', 'python'),
+    ]
     query_params.extend(unapplied_facet_fields)
     query_params.extend(filter_queries)
     response = self.send_request(query_params)
@@ -132,7 +133,8 @@ class SolrClient(object):
     query_params = [
       ('q', 'id:{0}'.format(self.escape_query_term(pid))),
       ('fl', 'id,dateModified,size,formatId'),
-      ('wt', 'python'),]
+      ('wt', 'python'),
+    ]
     response = self.send_request(query_params)
     try:
       doc = response['response']['docs'][0]
