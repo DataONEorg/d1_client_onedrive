@@ -35,8 +35,8 @@ import logging
 import os
 
 # App.
-import directory
-import directory_item
+from impl import directory
+from impl import directory_item
 
 
 # Set up logger for this module.
