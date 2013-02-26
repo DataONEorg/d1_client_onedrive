@@ -125,7 +125,7 @@ class SolrClient(object):
 
 
   def format_filter_query(self, applied_facets):
-    return ' AND '.join(['{0}:{1}'.format(f[0], 
+    return ' AND '.join(['{0}:{1}'.format(f[0],
       self.escape_query_term(f[1])) for f in applied_facets])
 
 
@@ -159,8 +159,8 @@ class SolrClient(object):
 #  def get_facet_fields_for_unapplied_facets(self, all_facet_names, applied_facets):
 #    unapplied_facets = self.get_unapplied_facets(all_facet_names, applied_facets)
 #    return ['facet.field={0}'.format(f) for f in unapplied_facets]
-  
-  
+
+
   def get_unapplied_facets(self, all_facet_names, applied_facets):
     return list(set(all_facet_names) - set(f[0] for f in applied_facets))
 
@@ -169,7 +169,7 @@ class SolrClient(object):
 #    q = 'title:moorx' # moor
 #    q = 'text:#1;dnatsrednu'
 #    return self.solr_connection.fieldValues(facet_name, q=q)
-  
+
 
   def get_hostname(self, base_url):
     return urlparse.urlsplit(base_url).netloc;
@@ -210,24 +210,28 @@ class SolrClient(object):
       #socket was closed, reinitialize and try again
       log.info("Connection was closed, retrying...")
       if retrycount > 2:
-        log.error('Too many retries: {0}: {0}'.format(abs_query_url, str(e)))
-        raise(e)
+        log.error('Unable to connect to Solr: {0}: Error:'.format(abs_query_url))
+        log.exception(e)
+        raise path_exception.PathException(
+          'Unable to connect to Solr: {0}: {1}'.format(abs_query_url, str(e.args[0])))
       retrycount += 1
       self.connection = self.create_connection()
       return self.get(query_url, headers, retrycount=retrycount)
     except (socket.error, httplib.HTTPException) as e:
-      log.error('Solr query failed: {0}: {0}'.format(abs_query_url, str(e)))
-      raise e
+      log.error('Solr query failed: {0}: Error:'.format(abs_query_url))
+      log.exception(e)
+      raise path_exception.PathException(
+        'Solr query failed: {0}: {1}'.format(abs_query_url, str(e.args[0])))
     self.assert_response_is_ok(response)
     return response
 
 
   def parse_result_dict(self, d):
-    unapplied_facet_counts = self.get_unapplied_facet_counts(d) 
+    unapplied_facet_counts = self.get_unapplied_facet_counts(d)
     entries = self.get_directory_entries(d)
-    return unapplied_facet_counts, entries 
-    
-  
+    return unapplied_facet_counts, entries
+
+
   def get_unapplied_facet_counts(self, d):
     facet_counts = d['facet_counts']['facet_fields']
     facets = {}
@@ -241,9 +245,9 @@ class SolrClient(object):
           'count': count,
           'values': facet_count_tuples,
         }
-    return facets 
-  
-  
+    return facets
+
+
   def pair_list_elements(self, list_with_pairs):
     p = list_with_pairs[:]
     p.append(None)
@@ -272,8 +276,11 @@ class SolrClient(object):
         html_doc = ''
       #s = SimpleHTMLToText()
       #txt_doc = s.get_text(html_doc)
-      msg = '{0}\n{1}\n{2}'.format(response.status, response.reason, html_doc)
-      raise Exception(msg)
+      log.error('Error in Solr response: {0}\n{1}\n{2}'
+                .format(response.status, response.reason, html_doc))
+      raise path_exception.PathException(
+        'Error in Solr response: {0}'.format(response.reason))
+      #raise Exception(msg)
 
 
   def escape_query_term(self, term):
@@ -379,6 +386,6 @@ class SimpleHTMLToText(HTMLParser.HTMLParser):
   def handle_data(self, d):
     self.fed.append(d)
 
-  
+
   def get_data(self):
     return ''.join(self.fed)

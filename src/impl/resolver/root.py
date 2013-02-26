@@ -36,7 +36,7 @@
    error messages as files. The resolvers should still be prepared to recognize
    error files, as it is possible that the cache fills up so the root
    resolver forgets about earlier exceptions, and forwards get_attribute()
-   requests for error files to the resolvers. 
+   requests for error files to the resolvers.
 :Author: DataONE (Dahl)
 '''
 
@@ -83,7 +83,7 @@ class RootResolver(resolver_abc.Resolver):
     except path_exception.PathException as e:
       self._cache_error_file_path(p, e)
       return attributes.Attributes(is_dir=True)
-    
+
 
   def get_directory(self, path):
     log.debug('get_directory: {0}'.format(path))
@@ -91,11 +91,11 @@ class RootResolver(resolver_abc.Resolver):
     # Exception handling removed because I don't think FUSE would ever call
     # get_directory() for a folder (except for the root), without that folder
     # first having been designated as a valid folder by get_attributes().
-    
+
     # If this call raises a PathException, it is because an earlier
     # get_attributes() call erroneously designated the path which caused the
     # exception to be raised as a valid path to a folder in an earlier call.
-    
+
     #try:
     return self._get_directory(p)
     #except path_exception.PathException as e:
@@ -120,7 +120,7 @@ class RootResolver(resolver_abc.Resolver):
 #    if self._is_error_file(path):
 #      return attributes.Attributes()
     return self._dispatch_get_attributes(path)
-    
+
 
   def _get_directory(self, path):
     if self._is_root(path):
@@ -144,28 +144,28 @@ class RootResolver(resolver_abc.Resolver):
   def _is_cached_error_folder_path(self, path):
     c = tuple(path) in self.error_file_cache.keys()
     log.debug('Check error file cache: {0}: {1}'.format(path, c))
-    return c 
-    
+    return c
+
 
   def _is_cached_error_file_path(self, path):
     #print repr(self.error_file_cache)
     #error_file_path_key = util.string_from_path_elements(path)
     c = tuple(path[:-1]) in self.error_file_cache.keys()
     log.debug('Check error file cache: {0}: {1}'.format(path[:-1], c))
-    return c 
-  
-  
+    return c
+
+
   def _cache_error_file_path(self, path, e):
     #error_file_path = path + [self.error_message_from_path_exception(e)]
     #error_file_path_key = util.string_from_path_elements(error_file_path)
     log.debug('Add to error file cache: {0}: {1}'.format(path, e))
     self.error_file_cache[tuple(path)] = self.error_message_from_path_exception(e)
-  
-  
+
+
   def _get_cached_error_message(self, path):
     return self.error_file_cache[tuple(path)]
-  
-  
+
+
   def _resolve_root(self):
     dir = directory.Directory()
     self.append_parent_and_self_references(dir)
@@ -173,7 +173,7 @@ class RootResolver(resolver_abc.Resolver):
                sorted(self.resolvers)])
     return dir
 
-  
+
   def _dispatch_get_attributes(self, path):
     return self._resolver_lookup(path).get_attributes(path[1:])
 
@@ -230,16 +230,20 @@ class RootResolver(resolver_abc.Resolver):
 
 
   def _render_error_message_as_file(self, error_message):
+    # Windows
+    #error_message = error_message.replace(':', ';')
+    log.error(error_message)
     dir = directory.Directory()
     self.append_parent_and_self_references(dir)
     dir.append(directory_item.DirectoryItem(error_message))
     return dir
 
-  
+
   def error_message_from_path_exception(self, path_exception):
+    # Windows. TODO: Implement platform agnostic solution
+    #return 'Error; ' + str(path_exception)
     return 'Error: ' + str(path_exception)
 
 
   def _is_root(self, path):
     return path == ['']
-  

@@ -26,21 +26,23 @@ def make_absolute(p):
 # User configurable settings.
 ################################################################################
 
-# DataONE maintains several instances of the DataONE infrastructure, called
-# environments. The production environment is used by the general public. Other
-# environments are used by software developers for testing and debugging of new
-# components. This setting controls to which environment ONEDrive connects.
+# In addition to the default production environment, DataONE maintains several
+# separate environments for use when developing and testing DataONE components.
+# There are no connections between the environments. For instance, certificates,
+# DataONE identities and science objects are exclusive to the environment in
+# which they were created. This setting controls to which environment ONEDrive
+# connects.
 
 # Round-robin CN endpoints
 #DATAONE_ROOT = d1_common.const.URL_DATAONE_ROOT # (recommended, production)
 #DATAONE_ROOT = 'https://cn-dev.test.dataone.org/cn'
-#DATAONE_ROOT = 'https://cn-stage.test.dataone.org/cn' 
+#DATAONE_ROOT = 'https://cn-stage.test.dataone.org/cn'
 #DATAONE_ROOT = 'https://cn-sandbox.dataone.org/cn'
 #DATAONE_ROOT = 'https://cn-stage.dataone.org/cn/'
 #DATAONE_ROOT = 'https://cn-stage.test.dataone.org/cn'
 
 # Bypass round-robin and go directly to a specific CN.
-DATAONE_ROOT = 'https://cn-dev-unm-1.test.dataone.org/cn' 
+DATAONE_ROOT = 'https://cn-dev-unm-1.test.dataone.org/cn'
 
 # Select the mountpoint for ONEDrive. The mountpoint is the folder in the local
 # filesystem in which the ONEDrive filesystem appears. The default is to mount
@@ -58,7 +60,7 @@ MOUNTPOINT = make_absolute('one') # (default, relative path)
 # Increasing this setting causes longer lists of science objects to to appear in
 # the filesystem, increases memory footprint for the application and causes
 # longer response times when opening folders. Default value: 1000.
-MAX_OBJECTS_IN_DIRECTORY = 1000
+MAX_OBJECTS_IN_DIRECTORY = 50
 
 # The maximum number of faceting selections that can be displayed for a facet.
 # The faceting selections are displayed when opening a facet to add a
@@ -133,7 +135,7 @@ MAX_ERROR_PATH_CACHE_SIZE = 1000
 # objects must be retrieved from Solr, and the values that this cache was
 # intended to hold are included with that information.
 
-# The maximum number of Solr query results to cache. 
+# The maximum number of Solr query results to cache.
 MAX_SOLR_QUERY_CACHE_SIZE = 1000
 
 # The facet name and value decorates select the characters which denote
@@ -174,7 +176,7 @@ FOLDER_SIZE_FOR_RESOURCE_MAPS = 'zero'
 SOLR_FILTER_QUERY = None
 
 # The path that is appended to the DataONE root URL to reach the endpoint for
-# the DataONE CNRead.query() API.  
+# the DataONE CNRead.query() API.
 SOLR_QUERY_PATH = '/v1/query/solr/'
 
 # Setting this value to 1 causes the Solr client to output debug information.
@@ -192,7 +194,7 @@ FUSE_NONEMPTY = True
 # onedrive.py command to return immediately. Setting this value to True
 # causes the driver to remain in the foreground.
 # True: Run driver in foreground (for debugging)
-# False: Run driver in background (for normal use) 
+# False: Run driver in background (for normal use)
 FUSE_FOREGROUND = True if DEBUG else False # (enabled when running in debug mode)
 #FUSE_FOREGROUND = True
 
@@ -210,7 +212,7 @@ FUSE_NOTHREADS = True if DEBUG else False # (enabled when running in debug mode)
 # accessing the filesystem through a GUI.
 MACFUSE_ICON = make_absolute(os.path.join('impl', 'd1.icon'))
 
-# Mount the filesystem as a local disk, not a network connected disk. 
+# Mount the filesystem as a local disk, not a network connected disk.
 MACFUSE_LOCAL_DISK = True
 
 # Paths that have special meaning to the operating system and that should be
@@ -218,6 +220,6 @@ MACFUSE_LOCAL_DISK = True
 IGNORE_SPECIAL = set([
   # OSX / Finder
   '._', '.DS_Store', 'Backups.backupdb', '.Trashes',
-  # KDE / Krusader                
-  '.directory', '.Trash', 'BDMV', '.xdg-volume-info', 
+  # KDE / Krusader
+  '.directory', '.Trash', 'BDMV', '.xdg-volume-info',
 ])

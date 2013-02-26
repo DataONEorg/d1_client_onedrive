@@ -94,6 +94,9 @@ def main():
     'foreground': settings.FUSE_FOREGROUND,
     'fsname': settings.FUSE_FILESYSTEM_NAME,
     'nothreads': settings.FUSE_NOTHREADS,
+    # Allow sharing the mount point with Samba / smb / smbd.
+    # Requires user_allow_other in /etc/fuse.conf
+    # 'allow_other': True,
   }
   # FUSE settings specific to MacFUSE.
   if os.uname()[0] == 'Darwin':
@@ -105,7 +108,7 @@ def main():
 
   log_startup_parameters(options, arguments, fuse_args)
   log_settings()
-  
+
   # Mount the drive and handle callbacks forever.
   fuse.FUSE(callbacks.FUSECallbacks(), mount_point, **fuse_args)
 
@@ -167,7 +170,7 @@ def log_settings():
   for k, v in sorted(settings.__dict__.items()):
     if k == k.upper():
       log.info('  {0}: {1}'.format(k, v))
-  
+
 
 if __name__ == '__main__':
   main()
