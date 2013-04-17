@@ -19,8 +19,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`fs`
-============
+''':mod:`mockup`
+================
 
 :Synopsis:
  - FUSE based system to create filesystem mockups for ONEDrive.
@@ -49,7 +49,7 @@ def main():
     'nothreads': True,
     # Allow sharing the mount point with Samba / smb / smbd.
     # Requires user_allow_other in /etc/fuse.conf
-    # 'allow_other': True,
+    'allow_other': True,
   }
   # FUSE settings specific to MacFUSE.
   if os.uname()[0] == 'Darwin':
