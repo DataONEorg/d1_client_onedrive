@@ -371,8 +371,8 @@ class TestSolrClient(unittest.TestCase):
     #pprint.pprint(result)
 
   
-  def test_200_faceted_search(self):
-    result = self.c.faceted_search(field_names_good_for_faceting, [])
+  def test_200_workspace(self):
+    result = self.c.workspace(field_names_good_for_faceting, [])
     #facet_values = self.c.get_facet_values_for_facet_name('id')
     #pprint.pprint(result)
 

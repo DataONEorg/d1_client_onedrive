@@ -47,8 +47,6 @@ from impl import cache
 from impl import command_processor
 from impl import directory
 from impl import directory_item
-from impl import facet_path_formatter
-from impl import facet_path_parser
 from impl import path_exception
 from .    import resolver_abc
 from impl import settings
@@ -60,8 +58,8 @@ log = logging.getLogger(__name__)
 
 
 class Resolver(resolver_abc.Resolver):
-  def __init__(self):
-    self.command_processor = command_processor.CommandProcessor()
+  def __init__(self, command_processor):
+    self.command_processor = command_processor
     self.object_format_info = d1_client.object_format_info.ObjectFormatInfo()
 
 
@@ -77,7 +75,7 @@ class Resolver(resolver_abc.Resolver):
       path)))
 
     return self._get_directory(path)
-  
+
 
   def read_file(self, path, size, offset):
     log.debug('read_file: {0}, {1}, {2}'.format(util.string_from_path_elements(
@@ -85,9 +83,9 @@ class Resolver(resolver_abc.Resolver):
 
     return self._read_file(path, size, offset)
 
-  
+
   # Private.
-  
+
   def _get_attribute(self, path):
     # d1_object handles two levels:
     # /pid
@@ -119,24 +117,24 @@ class Resolver(resolver_abc.Resolver):
         sys_meta_xml = self.command_processor.get_system_metadata_through_cache(pid)[1]
         return attributes.Attributes(size=len(sys_meta_xml),
                                      date=description['date'])
-  
-    self._raise_invalid_path()      
+
+    self._raise_invalid_path()
 
 
   def _get_directory(self, path):
     pid = path[0]
     description = self.command_processor.get_object_info_through_cache(pid)
     return [
-      directory_item.DirectoryItem(self._get_pid_filename(pid, description)),    
+      directory_item.DirectoryItem(self._get_pid_filename(pid, description)),
       directory_item.DirectoryItem('system.xml'),
     ]
 
-  
+
 
   def _read_file(self, path, size, offset):
     pid = path[0]
     filename = path[1]
-    
+
     if filename == 'system.xml':
       sys_meta_xml = self.command_processor.get_system_metadata_through_cache(pid)[1]
       return sys_meta_xml[offset:offset + size]
@@ -147,13 +145,13 @@ class Resolver(resolver_abc.Resolver):
       sci_obj = self.command_processor.get_science_object_through_cache(pid)
       return sci_obj[offset:offset + size]
 
-    self._raise_invalid_path()      
-    
+    self._raise_invalid_path()
+
 
   def _raise_invalid_pid(self, pid):
     raise path_exception.PathException('Invalid PID: {0}'.format(pid))
-  
-  
+
+
   def _raise_invalid_path(self):
     raise path_exception.PathException('Invalid path')
 

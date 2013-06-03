@@ -55,8 +55,9 @@ how_to_use = 'Use FlatSpace to go directly to any DataONE object by typing ' \
   'the PID in the path'
 
 class Resolver(resolver_abc.Resolver):
-  def __init__(self):
-    self.resource_map_resolver = resource_map.Resolver()
+  def __init__(self, command_processor):
+    self.command_processor = command_processor
+    self.resource_map_resolver = resource_map.Resolver(command_processor)
 
 
   def get_attributes(self, path):
@@ -65,7 +66,7 @@ class Resolver(resolver_abc.Resolver):
 
     if not len(path):
       return attributes.Attributes(is_dir=True)
-    
+
     if path[0] == how_to_use:
       return attributes.Attributes()
 
@@ -78,7 +79,7 @@ class Resolver(resolver_abc.Resolver):
 
     if not len(path):
       return [directory_item.DirectoryItem(how_to_use)]
-    
+
     return self.resource_map_resolver.get_directory(path)
 
 
@@ -88,5 +89,5 @@ class Resolver(resolver_abc.Resolver):
 
     if not len(path):
       return [directory_item.DirectoryItem(how_to_use)]
-    
+
     return self.resource_map_resolver.read_file(path, size, offset)

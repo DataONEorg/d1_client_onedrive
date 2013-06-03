@@ -36,6 +36,7 @@ import re
 # D1.
 import d1_client.d1client
 import d1_common.date_time
+import d1_workspace.types.generated.workspace_types as workspace_types
 
 # App.
 import cache
@@ -43,34 +44,43 @@ import onedrive_d1_client
 import onedrive_solr_client
 import path_exception
 import settings
-import singleton
 
 # Set up logger for this module.
 log = logging.getLogger(__name__)
 
 
-class CommandProcessor(singleton.Singleton):
-  def __init__(self):
-    # The Singleton base class does not prevent __init__() from being called
-    # each time the class is instantiated.
-    try:
-      self.is_initialized
-    except AttributeError:
-      pass
-    else:
-      return
-    self.is_initialized = True
-    #self.d1_client = onedrive_d1_client.D1Client()
-    #self.solr_client = onedrive_solr_client.SolrClient()
-    self.fields_good_for_faceting = self.init_field_names_good_for_faceting()
-    self.solr_query_cache = cache.Cache(settings.MAX_SOLR_QUERY_CACHE_SIZE)
-    self.object_description_cache = cache.Cache(1000)
-    self.science_object_cache = cache.Cache(1000)
-    self.system_metadata_cache = cache.Cache(1000)
+class CommandProcessor():
+  def __init__(self, options):
+    self.options = options
+    # Set up workspace.
+    xml_doc = open(self.options.workspace, 'rb').read()
+    self.workspace = workspace_types.CreateFromDocument(xml_doc)
+
+
+    #self.fields_good_for_faceting = self.init_field_names_good_for_faceting()
+    #self.solr_query_cache = cache.Cache(settings.MAX_SOLR_QUERY_CACHE_SIZE)
+    #self.object_description_cache = cache.Cache(1000)
+    #self.science_object_cache = cache.Cache(1000)
+    #self.system_metadata_cache = cache.Cache(1000)
     self.object_description_cache2 = cache.Cache(1000)
     self.solr_client = onedrive_solr_client.SolrClient()
 
   # Solr.
+
+  def get_workspace(self):
+    return self.workspace
+
+
+  def solr_query_raw(self, query_string):
+    #try:
+    #  return self._get_query_from_cache(applied_facets + filter_queries)
+    #except KeyError:
+    #  pass
+    #
+    ##log.debug('Fields good for faceting: {0}'.format(self.fields_good_for_faceting))
+    response = self.solr_client.query(query_string, field_list='*')
+    return response['response']['docs']
+
 
   def solr_query(self, applied_facets=None, filter_queries=None):
     if applied_facets is None:
@@ -110,13 +120,28 @@ class CommandProcessor(singleton.Singleton):
 
 
   def get_object_info_through_cache(self, pid):
+    #try:
+    #  return self.object_description_cache2[pid]
+    #except KeyError:
+    #  pass
+
+    pid_filter = 'id:{0}'.format(self.solr_client.escape_query_term_string(pid))
+    response = self.solr_client.query(pid_filter, field_list='*')
+
     try:
-      return self.object_description_cache2[pid]
-    except KeyError:
-      pass
-    o = self.solr_client.get_object_info(pid)
-    self.object_description_cache2[pid] = o
-    return o
+      doc = response['response']['docs'][0]
+    except IndexError:
+      raise path_exception.PathException('Invalid PID: {0}'.format(pid))
+
+    return {
+      'pid': doc['id'],
+      'format_id': doc['formatId'],
+      'size': doc['size'],
+      'date': d1_common.date_time.from_iso8601(doc['dateModified'])
+    }
+
+
+    return self.object_info_from_solr_record(doc)
 
 
   def get_all_field_names_good_for_faceting(self):
@@ -124,10 +149,7 @@ class CommandProcessor(singleton.Singleton):
 
 
   def facet_matches_filter(self, facet_name):
-    for regex in settings.FACET_FILTER:
-      if re.match(regex, facet_name):
-        return True
-    return False
+    return True
 
 
   # DataONE APIs.
@@ -147,7 +169,7 @@ class CommandProcessor(singleton.Singleton):
 #    try:
 #      return self.object_description_cache[pid]
 #    except KeyError:
-#      pass    
+#      pass
 #    description = self._get_description(pid)
 #    self.object_description_cache[pid] = description
 #    return description
@@ -157,17 +179,17 @@ class CommandProcessor(singleton.Singleton):
     try:
       return self.science_object_cache[pid]
     except KeyError:
-      pass    
+      pass
     science_object = self._get_science_object(pid)
     self.science_object_cache[pid] = science_object
-    return science_object  
+    return science_object
 
 
   def get_system_metadata_through_cache(self, pid):
     try:
       return self.system_metadata_cache[pid]
     except KeyError:
-      pass    
+      pass
     system_metadata_pyxb = self._get_system_metadata(pid)
     system_metadata_xml = system_metadata_pyxb.toxml().encode('utf8')
     self.system_metadata_cache[pid] = system_metadata_pyxb, system_metadata_xml
@@ -191,7 +213,7 @@ class CommandProcessor(singleton.Singleton):
 #    #self._parse_http_date_to_native_date_time(describe_response_dict)
 #    return describe_response_dict
 
-  
+
   def _get_science_object(self, pid):
     d1_client = onedrive_d1_client.D1Client()
     return d1_client.get_science_object(pid).read()
@@ -201,7 +223,7 @@ class CommandProcessor(singleton.Singleton):
     d1_client = onedrive_d1_client.D1Client()
     return d1_client.get_system_metadata(pid)
 
-  
+
   def _parse_http_date_to_native_date_time(self, describe_response_dict):
     date_fields = ['date', 'date']
     for date_field in date_fields:
