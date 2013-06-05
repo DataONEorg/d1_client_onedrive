@@ -49,7 +49,7 @@ from impl import directory
 from impl import directory_item
 from impl import path_exception
 from .    import resolver_abc
-from impl import settings
+#from impl #import settings
 from impl import util
 
 

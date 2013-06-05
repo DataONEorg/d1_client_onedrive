@@ -37,7 +37,7 @@ import d1_client.cnclient_1_1
 import d1_client.mnclient
 
 # App.
-import settings
+#import settings
 import path_exception
 
 
@@ -46,7 +46,7 @@ log = logging.getLogger(__name__)
 
 
 class D1Client(object):
-  def __init__(self, base_url=settings.DATAONE_ROOT):
+  def __init__(self, base_url=self._options.BASE_URL):
     self.base_url = base_url
     self.client = d1_client.cnclient_1_1.CoordinatingNodeClient(
       base_url=base_url)
