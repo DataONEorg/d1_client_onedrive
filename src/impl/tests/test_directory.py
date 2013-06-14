@@ -19,11 +19,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`test_resource_map_resolver`
-====================================
+''':mod:`test_directory`
+========================
 
 :Synopsis:
- - Test the ResourceMapResolver class.
+ - Test the Directory class.
 :Author: DataONE (Dahl)
 '''
 
@@ -36,20 +36,23 @@ import unittest
 
 # D1.
 sys.path.append('..')
-sys.path.append('../..')
-import resolver.resource_map
-import command_echoer
+import directory
+import directory_item
 
-
-
-class TestResourceMapResolver(unittest.TestCase):
+class TestDirectory(unittest.TestCase):
   def setUp(self):
-    self._resolver = resolver.resource_map.Resolver(None, command_echoer.CommandEchoer())
-
+    pass
 
   def test_100_init(self):
-    # Test class instantiation (done in setUp())
-    pass
+    d = directory.Directory()
+
+
+  def test_110_add_directory_item(self):
+    d = directory.Directory()
+    i = directory_item.DirectoryItem('fname', size=123, is_dir=True)
+    d.append(i)
+    self.assertEqual(len(d), 1)
+
 
 #===============================================================================
 
@@ -79,7 +82,7 @@ def main():
   else:
     logging.getLogger('').setLevel(logging.ERROR)
 
-  s = TestResourceMapResolver
+  s = TestDirectory
   s.options = options
 
   if options.test != '':

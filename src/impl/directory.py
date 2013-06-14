@@ -70,8 +70,8 @@ class Directory(collections.MutableSequence):
 
   def __repr__(self):
     return str(self)
-  
-  
+
+
   def insert(self, i, v):
     self.list.insert(i, v)
 

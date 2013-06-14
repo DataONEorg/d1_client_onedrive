@@ -36,7 +36,6 @@ import os
 # App.
 import directory
 import directory_item
-import facet_path
 import path_exception
 import resolver_abc
 

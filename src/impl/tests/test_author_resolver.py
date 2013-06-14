@@ -19,11 +19,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`test_resource_map_resolver`
-====================================
+''':mod:`test_author_resolver`
+==============================
 
 :Synopsis:
- - Test the ResourceMapResolver class.
+ - Test the TestAuthorResolver class.
 :Author: DataONE (Dahl)
 '''
 
@@ -37,14 +37,13 @@ import unittest
 # D1.
 sys.path.append('..')
 sys.path.append('../..')
-import resolver.resource_map
+import resolver.author
 import command_echoer
 
 
-
-class TestResourceMapResolver(unittest.TestCase):
+class TestAuthorResolver(unittest.TestCase):
   def setUp(self):
-    self._resolver = resolver.resource_map.Resolver(None, command_echoer.CommandEchoer())
+    self._resolver = resolver.author.Resolver(command_echoer.CommandEchoer())
 
 
   def test_100_init(self):
@@ -79,7 +78,7 @@ def main():
   else:
     logging.getLogger('').setLevel(logging.ERROR)
 
-  s = TestResourceMapResolver
+  s = TestAuthorResolver
   s.options = options
 
   if options.test != '':

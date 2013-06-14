@@ -19,37 +19,63 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`test_resource_map_resolver`
-====================================
+''':mod:`test_cache_memory`
+===========================
 
 :Synopsis:
- - Test the ResourceMapResolver class.
+ - Test the MemoryCache class.
 :Author: DataONE (Dahl)
 '''
 
 # Stdlib.
-import logging
 #import os
-import pprint
+import logging
 import sys
 import unittest
 
 # D1.
 sys.path.append('..')
-sys.path.append('../..')
-import resolver.resource_map
-import command_echoer
+import cache
+
+# Set up logger for this module.
+log = logging.getLogger(__name__)
 
 
-
-class TestResourceMapResolver(unittest.TestCase):
+class TestMemoryCache(unittest.TestCase):
   def setUp(self):
-    self._resolver = resolver.resource_map.Resolver(None, command_echoer.CommandEchoer())
-
-
-  def test_100_init(self):
-    # Test class instantiation (done in setUp())
     pass
+
+
+  def test_100_cache(self):
+    c = cache.Cache(10)
+    c['a'] = 1
+    self.assertEqual(len(c), 1)
+    self.assertEqual(c['a'], 1)
+    #self.assertEqual(len(c), 1)
+
+
+  def test_110_cache(self):
+    c = cache.Cache(2)
+    c['a'] = 1
+    c['b'] = 2
+    c['c'] = 3
+    self.assertEqual(len(c), 2)
+    self.assertRaises(KeyError, c.__getitem__, 'a')
+    self.assertEqual(c['b'], 2)
+    self.assertEqual(c['c'], 3)
+
+
+  def test_120_cache(self):
+    c = cache.Cache(2)
+    c['a'] = 1
+    c['b'] = 2
+    c['c'] = 3
+    c['a'] = 4
+    self.assertEqual(len(c), 2)
+    self.assertRaises(KeyError, c.__getitem__, 'b')
+    self.assertEqual(c['a'], 4)
+    self.assertEqual(c['c'], 3)
+
 
 #===============================================================================
 
@@ -79,7 +105,7 @@ def main():
   else:
     logging.getLogger('').setLevel(logging.ERROR)
 
-  s = TestResourceMapResolver
+  s = TestMemoryCache
   s.options = options
 
   if options.test != '':

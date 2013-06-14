@@ -19,11 +19,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`test_preconfigured_search`
-============================================
+''':mod:`test_root`
+============================
 
 :Synopsis:
- - Test the PreconfiguredSearchResolver class.
+ - Test the RootResolver class.
 :Author: DataONE (Dahl)
 '''
 
@@ -35,12 +35,57 @@ import sys
 import unittest
 
 # D1.
-sys.path.append('../fuse')
-import preconfigured_search
+sys.path.append('..')
+sys.path.append('../..')
+import resolver.root
+import command_echoer
 
-class TestPreconfiguredSearchResolver(unittest.TestCase):
+
+class O():
+  pass
+
+
+class TestRootResolver(unittest.TestCase):
   def setUp(self):
-    self.p = preconfigured_search.Resolver()
+    options = O()
+    options.BASE_URL = 'https://localhost/'
+    options.WORKSPACE_XML = './test_workspace.xml'
+    options.MAX_ERROR_PATH_CACHE_SIZE = 1000
+    options.MAX_SOLR_QUERY_CACHE_SIZE = 1000
+    self.r = resolver.root.RootResolver(options)
+
+
+  def test_100_get_directory(self):
+    d = self.r.get_directory('relative/path')
+    self.assertTrue('<non-existing directory>' in [f[0] for f in d])
+
+
+  def test_110_resolve(self):
+    d = self.r.get_directory('/absolute/path/invalid')
+    self.assertTrue('<non-existing directory>' in [f[0] for f in d])
+
+
+  def test_120_resolve(self):
+    d = self.r.get_directory('/')
+    self.assertFalse('<non-existing directory>' in [f[0] for f in d])
+    self.assertTrue('FacetedSearch' in [f[0] for f in d])
+    self.assertTrue('PreconfiguredSearch' in [f[0] for f in d])
+
+
+  def test_130_resolve(self):
+    d = self.r.get_directory('/TestResolver')
+    self.assertTrue('##/##' in [f[0] for f in d])
+
+
+  def test_140_resolve(self):
+    d = self.r.get_directory('/TestResolver/')
+    self.assertTrue('##/##' in [f[0] for f in d])
+
+
+  def _test_150_resolve(self):
+    d = self.r.get_directory('/TestResolver/abc/def')
+    print d
+    self.assertTrue('/abc/def' in [f[0] for f in d])
 
 #===============================================================================
 
@@ -70,7 +115,7 @@ def main():
   else:
     logging.getLogger('').setLevel(logging.ERROR)
 
-  s = TestPreconfiguredSearchResolver
+  s = TestRootResolver
   s.options = options
 
   if options.test != '':

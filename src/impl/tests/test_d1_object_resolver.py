@@ -19,11 +19,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`test_resource_map_resolver`
-====================================
+''':mod:`test_d1_object_resolver`
+=================================
 
 :Synopsis:
- - Test the ResourceMapResolver class.
+ - Test the TestD1ObjectResolver class.
 :Author: DataONE (Dahl)
 '''
 
@@ -37,14 +37,13 @@ import unittest
 # D1.
 sys.path.append('..')
 sys.path.append('../..')
-import resolver.resource_map
+import resolver.d1_object
 import command_echoer
 
 
-
-class TestResourceMapResolver(unittest.TestCase):
+class TestD1ObjectResolver(unittest.TestCase):
   def setUp(self):
-    self._resolver = resolver.resource_map.Resolver(None, command_echoer.CommandEchoer())
+    self._resolver = resolver.d1_object.Resolver(command_echoer.CommandEchoer())
 
 
   def test_100_init(self):
@@ -79,7 +78,7 @@ def main():
   else:
     logging.getLogger('').setLevel(logging.ERROR)
 
-  s = TestResourceMapResolver
+  s = TestD1ObjectResolver
   s.options = options
 
   if options.test != '':

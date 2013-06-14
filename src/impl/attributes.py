@@ -61,8 +61,7 @@ class Attributes(object):
 
   def date(self):
     return self.date_
-  
+
 
   def is_dir(self):
     return self.is_dir_
-  

@@ -24,7 +24,7 @@
 
 :Synopsis:
  - Test the ResourceMapResolver class.
-:Author: DataONE (Dahl)
+:TimePeriod: DataONE (Dahl)
 '''
 
 # Stdlib.
@@ -37,14 +37,13 @@ import unittest
 # D1.
 sys.path.append('..')
 sys.path.append('../..')
-import resolver.resource_map
+import resolver.time_period
 import command_echoer
 
 
-
-class TestResourceMapResolver(unittest.TestCase):
+class TestTimePeriodResolver(unittest.TestCase):
   def setUp(self):
-    self._resolver = resolver.resource_map.Resolver(None, command_echoer.CommandEchoer())
+    self._resolver = resolver.time_period.Resolver(command_echoer.CommandEchoer())
 
 
   def test_100_init(self):
@@ -79,7 +78,7 @@ def main():
   else:
     logging.getLogger('').setLevel(logging.ERROR)
 
-  s = TestResourceMapResolver
+  s = TestTimePeriodResolver
   s.options = options
 
   if options.test != '':

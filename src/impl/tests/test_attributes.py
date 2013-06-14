@@ -19,15 +19,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`test_resource_map_resolver`
-====================================
+''':mod:`test_attributes`
+=========================
 
 :Synopsis:
- - Test the ResourceMapResolver class.
+ - Test the Attributes class.
 :Author: DataONE (Dahl)
 '''
 
 # Stdlib.
+import datetime
 import logging
 #import os
 import pprint
@@ -36,20 +37,29 @@ import unittest
 
 # D1.
 sys.path.append('..')
-sys.path.append('../..')
-import resolver.resource_map
-import command_echoer
+import attributes
 
 
-
-class TestResourceMapResolver(unittest.TestCase):
+class TestAttributes(unittest.TestCase):
   def setUp(self):
-    self._resolver = resolver.resource_map.Resolver(None, command_echoer.CommandEchoer())
-
-
-  def test_100_init(self):
-    # Test class instantiation (done in setUp())
     pass
+
+
+  def test_100_create_attribute_with_defaults(self):
+    a = attributes.Attributes()
+
+
+  def test_110_create_attribute_with_size(self):
+    a = attributes.Attributes(123)
+    self.assertEqual(123, a.size())
+    self.assertTrue(a.date() is None)
+    self.assertTrue(a.is_dir() is False)
+
+
+  def test_120_representation(self):
+    a = attributes.Attributes(123, date=datetime.date(2003, 05, 23), is_dir=True)
+    self.assertEqual("<class 'attributes.Attributes'>({'size_': 123, 'is_dir_': True, 'date_': datetime.date(2003, 5, 23)})", str(a))
+
 
 #===============================================================================
 
@@ -79,7 +89,7 @@ def main():
   else:
     logging.getLogger('').setLevel(logging.ERROR)
 
-  s = TestResourceMapResolver
+  s = TestAttributes
   s.options = options
 
   if options.test != '':

@@ -19,11 +19,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`test_resource_map_resolver`
-====================================
+''':mod:`test_flat_space`
+=========================
 
 :Synopsis:
- - Test the ResourceMapResolver class.
+ - Test the FlatSpaceResolver class.
 :Author: DataONE (Dahl)
 '''
 
@@ -37,18 +37,31 @@ import unittest
 # D1.
 sys.path.append('..')
 sys.path.append('../..')
-import resolver.resource_map
-import command_echoer
+import directory
+import directory_item
+import solr_query_simulator
+import resolver.flat_space
+import command_processor
+import path_exception
 
 
+class O():
+  def flat_space(self):
+    pass
 
-class TestResourceMapResolver(unittest.TestCase):
+
+class TestFlatSpaceResolver(unittest.TestCase):
   def setUp(self):
-    self._resolver = resolver.resource_map.Resolver(None, command_echoer.CommandEchoer())
+    options = O()
+    options.BASE_URL = 'https://localhost/'
+    options.WORKSPACE_XML = './test_flat_space.xml'
+    options.MAX_ERROR_PATH_CACHE_SIZE = 1000
+    options.MAX_SOLR_QUERY_CACHE_SIZE = 1000
+    self.command_processor = command_processor.CommandProcessor(options)
+    self.w = resolver.flat_space.Resolver(options, self.command_processor)
 
 
-  def test_100_init(self):
-    # Test class instantiation (done in setUp())
+  def test_100(self):
     pass
 
 #===============================================================================
@@ -79,7 +92,7 @@ def main():
   else:
     logging.getLogger('').setLevel(logging.ERROR)
 
-  s = TestResourceMapResolver
+  s = TestFlatSpaceResolver
   s.options = options
 
   if options.test != '':

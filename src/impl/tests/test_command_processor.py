@@ -41,19 +41,21 @@ sys.path.append('..')
 import command_processor
 
 
+class O():
+  pass
+
+
 class TestCommandProcessor(unittest.TestCase):
   def setUp(self):
-    self.c = command_processor.CommandProcessor()
+    options = O()
+    options.BASE_URL = 'https://localhost/'
+    options.MAX_SOLR_QUERY_CACHE_SIZE = 1000
+    self.c = command_processor.CommandProcessor(options)
 
 
-  def test_100_get_all_field_names_good_for_faceting(self):
-    field_names = self.c.get_all_field_names_good_for_faceting()
-    self.assertTrue(len(field_names) > 5)
-    self.assertTrue(isinstance(field_names, list))
-
-
-  def _test_(self):
-    print self.c.solr_query([])
+  def test_100_init(self):
+    # Test class instantiation (done in setUp())
+    pass
 
 
 #===============================================================================
