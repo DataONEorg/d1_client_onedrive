@@ -50,6 +50,7 @@ class DiskCache(dict):
   def __init__(self, max_items, cache_directory_path):
     self._max_items = max_items
     self._cache_directory_path = cache_directory_path
+    self._make_cache_directory(cache_directory_path)
     self._n_items = self._count_items_in_cache()
 
 
@@ -137,7 +138,7 @@ class DiskCache(dict):
 
 
   def _filename_from_key(self, key):
-    return urllib.quote('#'.join(key)) # doseq=True
+    return urllib.quote(key, safe='') # doseq=True
 
 
   def _write_key_value_to_disk(self, key, value):
@@ -148,6 +149,13 @@ class DiskCache(dict):
   def _read_value_of_key_from_disk(self, key):
     with open(self._path_from_key(key), 'rb') as f:
       return pickle.load(f)
+
+
+  def _make_cache_directory(self, cache_directory_path):
+    try:
+      os.makedirs(cache_directory_path)
+    except OSError:
+      pass
 
   ## Disk cashed _get_query() for faster debugging.
   #def _get_query(self, params):
