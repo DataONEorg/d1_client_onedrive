@@ -23,7 +23,7 @@
 ===========================
 
 :Synopsis:
- - Test the MemoryCache class.
+ - Test the Cache class.
 :Author: DataONE (Dahl)
 '''
 
@@ -41,7 +41,7 @@ import cache
 log = logging.getLogger(__name__)
 
 
-class TestMemoryCache(unittest.TestCase):
+class TestCache(unittest.TestCase):
   def setUp(self):
     pass
 
@@ -105,7 +105,7 @@ def main():
   else:
     logging.getLogger('').setLevel(logging.ERROR)
 
-  s = TestMemoryCache
+  s = TestCache
   s.options = options
 
   if options.test != '':
