@@ -47,7 +47,7 @@ class Resolver(object):
   __metaclass__ = abc.ABCMeta
 
 
-  def __init__(self, command_processor):
+  def __init__(self, options, command_processor):
     pass
 
 

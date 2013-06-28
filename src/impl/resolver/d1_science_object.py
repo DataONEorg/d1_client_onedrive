@@ -44,7 +44,8 @@ log = logging.getLogger(__name__)
 
 
 class Resolver(resolver_abc.Resolver):
-  def __init__(self, command_processor):
+  def __init__(self, options, command_processor):
+    self._options = options
     self.command_processor = command_processor
 
 

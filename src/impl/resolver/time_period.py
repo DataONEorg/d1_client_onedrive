@@ -41,13 +41,13 @@ sys.path.append('.')
 from impl import attributes
 from impl import cache_memory as cache
 from impl import command_processor
-import d1_object
 from impl import directory
 from impl import directory_item
 from impl import path_exception
 import resolver_abc
 #from impl #import settings
 from impl import util
+import resource_map
 
 # Set up logger for this module.
 log = logging.getLogger(__name__)
@@ -57,9 +57,10 @@ log = logging.getLogger(__name__)
 # deal with those here.
 
 class Resolver(resolver_abc.Resolver):
-  def __init__(self, command_processor):
+  def __init__(self, options, command_processor):
+    self._options = options
     self.command_processor = command_processor
-    self.d1_object_resolver = d1_object.Resolver(command_processor)
+    self.resource_map_resolver = resource_map.Resolver(options, command_processor)
     #self.facet_value_cache = cache.Cache(self._options.MAX_FACET_NAME_CACHE_SIZE)
 
 
@@ -73,7 +74,7 @@ class Resolver(resolver_abc.Resolver):
       path)))
 
     if len(path) >= 3:
-      return self.d1_object_resolver.get_attributes(path[2:])
+      return self.resource_map_resolver.get_attributes(path[2:])
 
     return self._get_attribute(path)
 
@@ -83,7 +84,7 @@ class Resolver(resolver_abc.Resolver):
       path)))
 
     if len(path) >= 3:
-      return self.d1_object_resolver.get_directory(path[2:])
+      return self.resource_map_resolver.get_directory(path[2:])
 
     return self._get_directory(path, workspace_folder_objects)
 
@@ -93,7 +94,7 @@ class Resolver(resolver_abc.Resolver):
       .format(util.string_from_path_elements(path), size, offset))
 
     if len(path) >= 3:
-      return self.d1_object_resolver.read_file(path[2:], size, offset)
+      return self.resource_map_resolver.read_file(path[2:], size, offset)
 
     raise path_exception.PathException('Invalid file')
 

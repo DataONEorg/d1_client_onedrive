@@ -59,8 +59,7 @@ class Resolver(resolver_abc.Resolver):
   def __init__(self, options, command_processor):
     self._options = options
     self.command_processor = command_processor
-    self.d1_object_resolver = d1_object.Resolver(command_processor)
-    #self.facet_value_cache = cache.Cache(self._options.MAX_FACET_NAME_CACHE_SIZE)
+    self.d1_object_resolver = d1_object.Resolver(options, command_processor)
 
   # The resource map resolver handles only one hierarchy level, so anything
   # that has more levels is handed to the d1_object resolver.
@@ -74,7 +73,7 @@ class Resolver(resolver_abc.Resolver):
     # The resource map resolver handles only one hierarchy level, so anything
     # that has more levels is handed to the d1_object resolver.
     if len(path) > 1 or not self._is_resource_map(path[0]):
-      return self.d1_object_resolver.get_attributes(path[1:])
+      return self.d1_object_resolver.get_attributes(path)
 
     return self._get_attribute(path)
 
@@ -84,7 +83,7 @@ class Resolver(resolver_abc.Resolver):
       path)))
 
     if len(path) > 1 or not self._is_resource_map(path[0]):
-      return self.d1_object_resolver.get_directory(path[1:])
+      return self.d1_object_resolver.get_directory(path)
 
     return self._get_directory(path)
 
