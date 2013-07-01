@@ -53,6 +53,12 @@ import resource_map
 
 # Set up logger for this module.
 log = logging.getLogger(__name__)
+try:
+  if __name__ in logging.DEBUG_MODULES:
+    __level = logging.getLevelName("DEBUG")
+    log.setLevel(__level)
+except:
+  pass  
 
 
 class Resolver(resolver_abc.Resolver):

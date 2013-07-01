@@ -55,6 +55,12 @@ from impl import util
 
 # Set up logger for this module.
 log = logging.getLogger(__name__)
+try:
+  if __name__ in logging.DEBUG_MODULES:
+    __level = logging.getLevelName("DEBUG")
+    log.setLevel(__level)
+except:
+  pass  
 
 
 class Resolver(resolver_abc.Resolver):
@@ -118,17 +124,30 @@ class Resolver(resolver_abc.Resolver):
         sys_meta_xml = self.command_processor.get_system_metadata_through_cache(pid)[1]
         return attributes.Attributes(size=len(sys_meta_xml),
                                      date=record['dateUploaded'])
-
+      #DV
+      #The subfolder "Packages" lists all the resource maps that reference the 
+      #parent PID
+      if path[1] == "Packages":
+        #list package identifiers
+        dirlen = 0     
+        if record.has_key("resourceMap"):
+          dirlen += len(record['resourceMap'])
+        
+        return attributes.Attributes(is_dir = True,
+                                     size=dirlen,
+                                     date=record['dateUploaded'] )
     self._raise_invalid_path()
 
 
   def _get_directory(self, path):
     pid = path[0]
     record = self.command_processor.get_solr_record(pid)
-    return [
-      self._make_directory_item_for_solr_record(record),
-      directory_item.DirectoryItem('system.xml'),
-    ]
+    res = [self._make_directory_item_for_solr_record(record),
+           directory_item.DirectoryItem('system.xml'),]
+    #DV
+    #if record.has_key("resourceMap"):
+    #  res.append( directory_item.DirectoryItem("Packages") )
+    return res
 
 
   def _make_directory_item_for_solr_record(self, record):
@@ -162,5 +181,16 @@ class Resolver(resolver_abc.Resolver):
 
 
   def _get_pid_filename(self, pid, record):
+    lcpid = pid.lower()
+    ENDINGS = {'DATA': ['.zip', '.csv', '.xls', '.xslx','.xml','.pdf'],
+               'METADATA': ['.xml',],
+               'RESOURCE': ['.rdf', '.xml'] 
+               }
+    try:
+      for ending in ENDINGS[record['formatType']]:
+        if lcpid.endswith(ending):
+          return pid
+    except KeyError:
+      pass
     return pid + self.object_format_info.filename_extension_from_format_id(
       record['formatId'])

@@ -41,6 +41,12 @@ from impl import path_exception
 
 # Set up logger for this module.
 log = logging.getLogger(__name__)
+try:
+  if __name__ in logging.DEBUG_MODULES:
+    __level = logging.getLevelName("DEBUG")
+    log.setLevel(__level)
+except:
+  pass  
 
 
 class Resolver(object):
@@ -52,12 +58,12 @@ class Resolver(object):
 
 
   @abc.abstractmethod
-  def get_attributes(self, path):
+  def get_attributes(self, path, full_path=[]):
     pass
 
 
   @abc.abstractmethod
-  def get_directory(self, path):
+  def get_directory(self, path, full_path=[]):
     pass
 
 
