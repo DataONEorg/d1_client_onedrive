@@ -76,10 +76,12 @@ class RootResolver(resolver_abc.Resolver):
   FLDR_FLATSPACE = "FlatSpace"
   
   def __init__(self, options):
-    self._options = options
     # The command processor is shared between all resolvers. It holds db and
     # REST connections and caches items that may be shared between resolvers.
-    self.command_processor = impl.command_processor.CommandProcessor(options)
+    command_processor = impl.command_processor.CommandProcessor(options)
+    
+    super(RootResolver, self).__init__(options, command_processor)
+    
     # Instantiate the first layer of resolvers and map them to the root folder
     # names.
     options._root_cache_delete_callback = self.cbClearCacheItem
@@ -92,9 +94,13 @@ class RootResolver(resolver_abc.Resolver):
     self.error_file_cache = cache.Cache(self._options.MAX_ERROR_PATH_CACHE_SIZE)
 
 
-  def get_attributes(self, path):
+  def get_attributes(self, path, fs_path=''):
     log.debug('get_attributes: {0}'.format(path))
     p = self._split_and_unescape_path(path)
+    try:
+      return super(RootResolver, self).get_attributes(path, fs_path)
+    except path_exception.NoResultException:
+      pass
     try:
       return self._get_attributes(p)
     except path_exception.PathException as e:
@@ -102,9 +108,10 @@ class RootResolver(resolver_abc.Resolver):
       return attributes.Attributes(is_dir=True)
 
 
-  def get_directory(self, path):
+  def get_directory(self, path, fs_path=''):
     log.debug('get_directory: {0}'.format(path))
     p = self._split_and_unescape_path(path)
+
     # Exception handling removed because I don't think FUSE would ever call
     # get_directory() for a folder (except for the root), without that folder
     # first having been designated as a valid folder by get_attributes().
@@ -120,9 +127,13 @@ class RootResolver(resolver_abc.Resolver):
       return self._render_path_exception_as_file(e)
 
 
-  def read_file(self, path, size, offset):
+  def read_file(self, path, size, offset, fs_path=''):
     log.debug('read_file: {0}, {1}, {2}'.format(path, size, offset))
     p = self._split_and_unescape_path(path)
+    try:
+      return super(RootResolver, self).read_file(path, size, offset, fs_path=fs_path)
+    except path_exception.NoResultException:
+      pass
     return self._read_file(p, size, offset)
 
 
