@@ -51,12 +51,12 @@ from .    import resource_map
 
 # Set up logger for this module.
 log = logging.getLogger(__name__)
+#Set level specific for this module if specified
 try:
-  if __name__ in logging.DEBUG_MODULES:
-    __level = logging.getLevelName("DEBUG")
-    log.setLevel(__level)
+  log.setLevel(logging.getLevelName( \
+               getattr(logging,'ONEDRIVE_MODULES')[__name__]) )
 except:
-  pass  
+  pass
 
 
 class Resolver(resolver_abc.Resolver):
@@ -122,5 +122,16 @@ the PID in the path.
 
 
   def modified(self):
+    # This is a bit of a hack. 
+    # Need to find a better way of notifying hte OS that
+    # there's new content in here.
     self._modified = datetime.utcnow()
+    try:
+      del self._options.attribute_cache['/FlatSpace']
+    except KeyError:
+      pass
+    try:
+      del self._options.directory_cache['/FlatSpace']
+    except KeyError:
+      pass
 
