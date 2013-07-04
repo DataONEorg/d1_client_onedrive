@@ -72,8 +72,8 @@ except:
 
 class RootResolver(resolver_abc.Resolver):
   
-  FLDR_WORKSPACE = "Workspace"
-  FLDR_FLATSPACE = "FlatSpace"
+  FLDR_WORKSPACE = u"Workspace"
+  FLDR_FLATSPACE = u"FlatSpace"
   
   def __init__(self, options):
     # The command processor is shared between all resolvers. It holds db and
@@ -95,7 +95,7 @@ class RootResolver(resolver_abc.Resolver):
 
 
   def get_attributes(self, path, fs_path=''):
-    log.debug('get_attributes: {0}'.format(path))
+    log.debug(u'get_attributes: {0}'.format(path))
     p = self._split_and_unescape_path(path)
     try:
       return super(RootResolver, self).get_attributes(path, fs_path)
@@ -109,7 +109,7 @@ class RootResolver(resolver_abc.Resolver):
 
 
   def get_directory(self, path, fs_path=''):
-    log.debug('get_directory: {0}'.format(path))
+    log.debug(u'get_directory: {0}'.format(path))
     p = self._split_and_unescape_path(path)
 
     # Exception handling removed because I don't think FUSE would ever call
@@ -119,7 +119,6 @@ class RootResolver(resolver_abc.Resolver):
     # If this call raises a PathException, it is because an earlier
     # get_attributes() call erroneously designated the path which caused the
     # exception to be raised as a valid path to a folder in an earlier call.
-
     try:
       return self._get_directory(p)
     except path_exception.PathException as e:
@@ -128,7 +127,7 @@ class RootResolver(resolver_abc.Resolver):
 
 
   def read_file(self, path, size, offset, fs_path=''):
-    log.debug('read_file: {0}, {1}, {2}'.format(path, size, offset))
+    log.debug(u'read_file: {0}, {1}, {2}'.format(path, size, offset))
     p = self._split_and_unescape_path(path)
     try:
       return super(RootResolver, self).read_file(path, size, offset, fs_path=fs_path)
@@ -180,7 +179,7 @@ class RootResolver(resolver_abc.Resolver):
 
   def _is_cached_error_folder_path(self, path):
     c = tuple(path) in self.error_file_cache.keys()
-    log.debug('Check error file cache: {0}: {1}'.format(path, c))
+    log.debug(u'Check error file cache: {0}: {1}'.format(path, c))
     return c
 
 
@@ -188,14 +187,14 @@ class RootResolver(resolver_abc.Resolver):
     #print repr(self.error_file_cache)
     #error_file_path_key = util.string_from_path_elements(path)
     c = tuple(path[:-1]) in self.error_file_cache.keys()
-    log.debug('Check error file cache: {0}: {1}'.format(path[:-1], c))
+    log.debug(u'Check error file cache: {0}: {1}'.format(path[:-1], c))
     return c
 
 
   def _cache_error_file_path(self, path, e):
     #error_file_path = path + [self.error_message_from_path_exception(e)]
     #error_file_path_key = util.string_from_path_elements(error_file_path)
-    log.debug('Add to error file cache: {0}: {1}'.format(path, e))
+    log.debug(u'Add to error file cache: {0}: {1}'.format(path, e))
     self.error_file_cache[tuple(path)] = self.error_message_from_path_exception(e)
 
 
@@ -255,7 +254,7 @@ class RootResolver(resolver_abc.Resolver):
     try:
       return self.resolvers[path[0]]
     except KeyError:
-      raise path_exception.PathException('Invalid root directory')
+      raise path_exception.PathException(u'Invalid root directory')
 
 
   def _render_path_exception_as_file(self, path_exception):
@@ -279,7 +278,7 @@ class RootResolver(resolver_abc.Resolver):
   def error_message_from_path_exception(self, path_exception):
     # Windows. TODO: Implement platform agnostic solution
     #return 'Error; ' + str(path_exception)
-    return 'Error: ' + str(path_exception)
+    return u'Error: ' + unicode(path_exception)
 
 
   def _is_root(self, path):

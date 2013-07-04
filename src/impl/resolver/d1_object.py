@@ -64,13 +64,16 @@ except:
 
 
 class Resolver(resolver_abc.Resolver):
+  
+  SYSTEM_XML = u"system.xml"
+  
   def __init__(self, options, command_processor):
     super(Resolver, self).__init__(options, command_processor)
     self.object_format_info = d1_client.object_format_info.ObjectFormatInfo()
 
 
   def get_attributes(self, path, fs_path=''):
-    log.debug('get_attributes: {0}'.format(util.string_from_path_elements(
+    log.debug(u'get_attributes: {0}'.format(util.string_from_path_elements(
       path)))
     try:
       return super(Resolver, self).get_attributes(path, fs_path)
@@ -81,13 +84,13 @@ class Resolver(resolver_abc.Resolver):
 
 
   def get_directory(self, path, fs_path=''):
-    log.debug('get_directory: {0}'.format(util.string_from_path_elements(
+    log.debug(u'get_directory: {0}'.format(util.string_from_path_elements(
       path)))
     return self._get_directory(path)
 
 
   def read_file(self, path, size, offset, fs_path=''):
-    log.debug('read_file: {0}, {1}, {2}'.format(util.string_from_path_elements(
+    log.debug(u'read_file: {0}, {1}, {2}'.format(util.string_from_path_elements(
       path), size, offset))
     try:
       return super(Resolver, self).read_file(path, size, offset, fs_path=fs_path)
@@ -125,7 +128,7 @@ class Resolver(resolver_abc.Resolver):
         return attributes.Attributes(size=record['size'],
                                      date=record['dateUploaded'])
 
-      if path[1] == 'system.xml':
+      if path[1] == Resolver.SYSTEM_XML:
         sys_meta_xml = self.command_processor.get_system_metadata_through_cache(pid)[1]
         return attributes.Attributes(size=len(sys_meta_xml),
                                      date=record['dateUploaded'])
@@ -136,7 +139,7 @@ class Resolver(resolver_abc.Resolver):
     pid = path[0]      
     record = self.command_processor.get_solr_record(pid)
     res = [self._make_directory_item_for_solr_record(record),
-           directory_item.DirectoryItem('system.xml'),]
+           directory_item.DirectoryItem(Resolver.SYSTEM_XML),]
     if self.hasHelpEntry(path):
       res.append(self.getHelpDirectoryItem())
     return res
@@ -151,7 +154,7 @@ class Resolver(resolver_abc.Resolver):
     pid = path[0]
     filename = path[1]
 
-    if filename == 'system.xml':
+    if filename == Resolver.SYSTEM_XML:
       sys_meta_xml = self.command_processor.get_system_metadata_through_cache(pid)[1]
       return sys_meta_xml[offset:offset + size]
 
@@ -165,11 +168,11 @@ class Resolver(resolver_abc.Resolver):
 
 
   def _raise_invalid_pid(self, pid):
-    raise path_exception.PathException('Invalid PID: {0}'.format(pid))
+    raise path_exception.PathException(u'Invalid PID: {0}'.format(pid))
 
 
   def _raise_invalid_path(self):
-    raise path_exception.PathException('Invalid path')
+    raise path_exception.PathException(u'Invalid path')
 
 
   def _get_pid_filename(self, pid, record):

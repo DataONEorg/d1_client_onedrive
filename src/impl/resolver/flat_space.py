@@ -75,7 +75,7 @@ the PID in the path.
 
 
   def get_attributes(self, path, fs_path=''):
-    log.debug('get_attributes: {0}'.format(util.string_from_path_elements(
+    log.debug(u'get_attributes: {0}'.format(util.string_from_path_elements(
       path)))
     try:
       return super(Resolver, self).get_attributes(path, fs_path)
@@ -98,7 +98,7 @@ the PID in the path.
 
 
   def get_directory(self, path, fs_path=''):
-    log.debug('get_directory: {0}'.format(util.string_from_path_elements(
+    log.debug(u'get_directory: {0}'.format(util.string_from_path_elements(
       path)))
     res = []
     if self.helpSize() > 0:
@@ -112,7 +112,7 @@ the PID in the path.
 
 
   def read_file(self, path, size, offset, fs_path=''):
-    log.debug('read_file: {0}, {1}, {2}'.format(util.string_from_path_elements(
+    log.debug(u'read_file: {0}, {1}, {2}'.format(util.string_from_path_elements(
       path), size, offset))
     try:
       return super(Resolver, self).read_file(path, size, offset, fs_path=fs_path)
@@ -123,7 +123,7 @@ the PID in the path.
 
   def modified(self):
     # This is a bit of a hack. 
-    # Need to find a better way of notifying hte OS that
+    # Need to find a better way of notifying the OS that
     # there's new content in here.
     self._modified = datetime.utcnow()
     try:

@@ -71,7 +71,7 @@ class Resolver(resolver_abc.Resolver):
 
 
   def get_attributes(self, path, fs_path=''):
-    log.debug('get_attributes: {0}'.format(util.string_from_path_elements(
+    log.debug(u'get_attributes: {0}'.format(util.string_from_path_elements(
       path)))
     try:
       return super(Resolver, self).get_attributes(path, fs_path)
@@ -92,7 +92,7 @@ class Resolver(resolver_abc.Resolver):
 
 
   def get_directory(self, path, fs_path=''):
-    log.debug('get_directory: {0}'.format(util.string_from_path_elements(
+    log.debug(u'get_directory: {0}'.format(util.string_from_path_elements(
       path)))
     is_resource_map = self._is_resource_map(path[0])
     if not is_resource_map:
@@ -106,7 +106,7 @@ class Resolver(resolver_abc.Resolver):
 
 
   def read_file(self, path, size, offset, fs_path=''):
-    log.debug('read_file: {0}, {1}, {2}'.format(util.string_from_path_elements(
+    log.debug(u'read_file: {0}, {1}, {2}'.format(util.string_from_path_elements(
       path), size, offset))
     try:
       return super(Resolver, self).read_file(path, size, offset, fs_path=fs_path)
@@ -155,7 +155,7 @@ class Resolver(resolver_abc.Resolver):
 
 
   def _raise_invalid_pid(self, pid):
-    raise path_exception.PathException('Invalid PID: {0}'.format(pid))
+    raise path_exception.PathException(u'Invalid PID: {0}'.format(pid))
 
 
   def deserialize_resource_map(self, resource_map):

@@ -77,19 +77,21 @@ class SolrConnection(object):
       headers = {}
     abs_query_url = self._solr_selector + '?' + query_url
     for i in range(self._n_tries):
-      log.debug('get({0}{1})'.format(self._solr_host, abs_query_url))
+      log.debug(u'get({0}{1})'.format(self._solr_host, abs_query_url))
       try:
         self._connection.request('GET', abs_query_url, headers=headers)
         response = self._connection.getresponse()
       except (httplib.BadStatusLine,httplib.CannotSendRequest, socket.error,
               httplib.HTTPException) as e:
-        log.exception('Solr query failed: {0}: Exception:'.format(query_url))
+        log.exception(u'Solr query failed (attempt {0}: {1}: Exception:'.format(str(i), query_url))
+        self._connection.close()
         self._connection = self._create_connection()
       else:
         self._assert_response_is_ok(response)
         return eval(response.read())
+      log.warn(u"Retrying get after connection failed (ntries = %s)" % str(i+1))
 
-    raise path_exception.PathException('Giving up Solr query after {0} tries: {1}'
+    raise path_exception.PathException(u'Giving up Solr query after {0} tries: {1}'
                                        .format(self._n_tries, query_url))
 
 
@@ -101,10 +103,10 @@ class SolrConnection(object):
         html_doc = ''
       #s = SimpleHTMLToText()
       #txt_doc = s.get_text(html_doc)
-      log.error('Error in Solr response: {0}\n{1}\n{2}'
+      log.error(u'Error in Solr response: {0}\n{1}\n{2}'
                 .format(response.status, response.reason, html_doc))
       raise path_exception.PathException(
-        'Error in Solr response: {0}'.format(response.reason))
+        u'Error in Solr response: {0}'.format(response.reason))
       #raise Exception(msg)
 
 
@@ -151,7 +153,7 @@ class SolrClient(object):
   def escape_query_term_string(self, term):
     '''Escape a query term string and wrap it in quotes.
     '''
-    return '"{0}"'.format(self._escape_query_term(term))
+    return u'"{0}"'.format(self._escape_query_term(term))
 
   # Private.
 

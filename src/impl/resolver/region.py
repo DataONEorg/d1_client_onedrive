@@ -72,7 +72,7 @@ class Resolver(resolver_abc.Resolver):
   # All longer paths are handled by d1_object resolver.
 
   def get_attributes(self, path): #workspace_folder_objects
-    log.debug('get_attributes: {0}'.format(util.string_from_path_elements(
+    log.debug(u'get_attributes: {0}'.format(util.string_from_path_elements(
       path)))
 
     if len(path) >= 2:
@@ -82,7 +82,7 @@ class Resolver(resolver_abc.Resolver):
 
 
   def get_directory(self, path, workspace_folder_objects):
-    log.debug('get_directory: {0}'.format(util.string_from_path_elements(
+    log.debug(u'get_directory: {0}'.format(util.string_from_path_elements(
       path)))
 
     if len(path) >= 2:
@@ -92,13 +92,13 @@ class Resolver(resolver_abc.Resolver):
 
 
   def read_file(self, path, size, offset):
-    log.debug('read_file: {0}, {1}, {2}'
+    log.debug(u'read_file: {0}, {1}, {2}'
       .format(util.string_from_path_elements(path), size, offset))
 
     if len(path) >= 2:
       return self.resource_map_resolver.read_file(path[1:], size, offset)
 
-    raise path_exception.PathException('Invalid file')
+    raise path_exception.PathException(u'Invalid file')
 
   # Private.
 

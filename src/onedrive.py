@@ -35,6 +35,7 @@ import logging
 #import logging.config # Needs 2.7.
 import os
 import sys
+import codecs
 import optparse
 
 # 3rd party.
@@ -61,7 +62,7 @@ log = logging.getLogger(__name__)
 
 def main():
   if not check_dependencies.check_dependencies():
-    raise Exception('Dependency check failed')
+    raise Exception(u'Dependency check failed')
 
   parser = optparse.OptionParser('%prog [options]')
   parser.add_option('-v','--version', dest='version',
@@ -145,12 +146,12 @@ def log_setup(options):
   # Set up logging.
   # Log entries are written to both file and stdout.
   logging.getLogger('').setLevel(logging.INFO)
-  formatter = logging.Formatter('%(asctime)s %(levelname)-8s %(name)s'
-                                '(%(lineno)d): %(message)s',
-                                '%Y-%m-%d %H:%M:%S')
+  formatter = logging.Formatter(u'%(asctime)s %(levelname)-8s %(name)s'
+                                u'(%(lineno)d): %(message)s',
+                                u'%Y-%m-%d %H:%M:%S')
   # Log to a file
   if options.LOG_FILE_PATH is not None:
-      file_logger = logging.FileHandler(options.LOG_FILE_PATH, 'a')
+      file_logger = logging.FileHandler(options.LOG_FILE_PATH, 'a', encoding='UTF-8')
       file_logger.setFormatter(formatter)
       logging.getLogger('').addHandler(file_logger)
   # Also log to stdout

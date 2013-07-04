@@ -70,8 +70,12 @@ class Directory(collections.MutableSequence):
     self.list[i] = v
 
 
+  def __unicode__(self):
+    return unicode(self.list)
+
+
   def __str__(self):
-    return str(self.list)
+    return unicode(self).encode('utf-8')
 
 
   def __repr__(self):

@@ -77,13 +77,13 @@ class FacetPathFormatter(object):
 
   def _raise_if_already_facet_name(self, e):
     if self._is_facet_name(e):
-      raise Exception('Internal error: Is already facet name: {0}'
+      raise Exception(u'Internal error: Is already facet name: {0}'
                       .format(e))
 
     
   def _raise_if_already_facet_value(self, e):
     if self._is_facet_value(e):
-      raise Exception('Internal error: Is already facet value: {0}'
+      raise Exception(u'Internal error: Is already facet value: {0}'
                       .format(e))
 
 

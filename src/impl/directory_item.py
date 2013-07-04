@@ -57,9 +57,12 @@ class DirectoryItem(object):
     return self.__dict__ == other.__dict__
 
 
+  def __unicode__(self):
+    return u'DirectoryItem({0}, {1}, {2})'.format(repr(self.name_), self.size_,
+                                                  self.is_dir_)
+    
   def __str__(self):
-    return 'DirectoryItem({0}, {1}, {2})'.format(repr(self.name_), self.size_,
-                                                 self.is_dir_)
+    return unicode(self).encode('utf-8')
 
 
   def __repr__(self):
