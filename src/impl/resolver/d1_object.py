@@ -63,10 +63,12 @@ except:
   pass
 
 
+log.setLevel(logging.DEBUG)
+
 class Resolver(resolver_abc.Resolver):
-  
+
   SYSTEM_XML = u"system.xml"
-  
+
   def __init__(self, options, command_processor):
     super(Resolver, self).__init__(options, command_processor)
     self.object_format_info = d1_client.object_format_info.ObjectFormatInfo()
@@ -136,7 +138,7 @@ class Resolver(resolver_abc.Resolver):
 
 
   def _get_directory(self, path):
-    pid = path[0]      
+    pid = path[0]
     record = self.command_processor.get_solr_record(pid)
     res = [self._make_directory_item_for_solr_record(record),
            directory_item.DirectoryItem(Resolver.SYSTEM_XML),]
@@ -179,7 +181,7 @@ class Resolver(resolver_abc.Resolver):
     lcpid = pid.lower()
     ENDINGS = {'DATA': ['.zip', '.csv', '.xls', '.xslx','.xml','.pdf'],
                'METADATA': ['.xml',],
-               'RESOURCE': ['.rdf', '.xml'] 
+               'RESOURCE': ['.rdf', '.xml']
                }
     try:
       for ending in ENDINGS[record['formatType']]:

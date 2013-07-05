@@ -124,9 +124,9 @@ class Resolver(object):
   def getHelp(self, offset=0, size=None):
     return self.helpText[offset:size]
 
-  
+
   def getHelpDirectoryItem(self):
-    return directory_item.DirectoryItem(README_NAME, 
+    return directory_item.DirectoryItem(README_NAME,
                                         size=self.helpSize(),
                                         is_dir=False)
 
