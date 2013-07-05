@@ -34,6 +34,7 @@ import json
 import logging
 import os
 import pprint
+import socket
 import sys
 
 # D1.
@@ -64,8 +65,8 @@ except:
 log.setLevel(logging.DEBUG)
 
 
-GAZETTEER_HOST = '192.168.1.116'
-#GAZETTEER_HOST = 'stress-1-unm.test.dataone.org'
+#GAZETTEER_HOST = '192.168.1.116'
+GAZETTEER_HOST = 'stress-1-unm.test.dataone.org'
 
 
 class Resolver(resolver_abc.Resolver):
@@ -180,9 +181,12 @@ class Resolver(resolver_abc.Resolver):
 
 
   def _get_region_tree_for_geo_record(self, geo_record):
-    c = httplib.HTTPConnection(GAZETTEER_HOST)
-    c.request('GET', '/region_tree/{0}/{1}/{2}/{3}'.format(*geo_record[1:]))
-    return json.loads(c.getresponse().read())
+    try:
+      c = httplib.HTTPConnection(GAZETTEER_HOST)
+      c.request('GET', '/region_tree/{0}/{1}/{2}/{3}'.format(*geo_record[1:]))
+      return json.loads(c.getresponse().read())
+    except (httplib.HTTPException, socket.error):
+      return {'Reverse geocoding failed': {}}
 
 
   def _get_records_with_geo_bounding_box(self, workspace_folder_objects):
