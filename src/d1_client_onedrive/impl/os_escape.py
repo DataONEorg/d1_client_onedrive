@@ -50,14 +50,15 @@ import os
 import urllib
 import logging
 
+
 # Set up logger for this module.
 log = logging.getLogger(__name__)
-#Set level specific for this module if specified
-try:
-  log.setLevel(logging.getLevelName( \
-               getattr(logging,'ONEDRIVE_MODULES')[__name__]) )
-except:
-  pass
+# Set specific logging level for this module if specified.
+#try:
+#  log.setLevel(logging.getLevelName( \
+#               getattr(logging, 'ONEDRIVE_MODULES')[__name__]) )
+#except KeyError:
+#  pass
 
 
 '''Quote and unquote are somewhat borrowed from python urllib standard
@@ -87,14 +88,10 @@ def unquote(s):
 '''Pass in a dictionary that has unsafe characters as the keys, and the
 percent encoded value as the value.
 '''
-def quote(s, unsafe={u'/':u'%2F',}):
-  if not s:
-    if s is None:
-      raise TypeError('None object cannot be quoted')
-    return s
-  res = s.replace(u'%',u'%25')
+def quote(s, unsafe=u'/'):
+  res = s.replace(u'%', u'%25')
   for c in unsafe:
-    res = res.replace(c, unsafe[c])
+    res = res.replace(c, '%' + (hex(ord(c)).upper())[2:])
   return res
 
 
@@ -116,8 +113,7 @@ def posix_identifier_from_filename(filename):
 
 
 def windows_filename_from_identifier(identifier):
-  #return urllib.quote(identifier.encode('utf8'), safe='`@#~!$^&()-=,. ')
-  return quote(identifier)
+  return quote(identifier, u'\\/:*?"<>|')
 
 
 def windows_identifier_from_filename(filename):
@@ -135,3 +131,14 @@ if os.name in WINDOWS:
   filename_from_identifier = windows_filename_from_identifier
   identifier_from_filename = windows_identifier_from_filename
 
+# TODO: Move to unit tests.
+if __name__ == '__main__':
+  c = 'doi:10.5063/AA/matthias.7.1'
+  print c
+  q = windows_filename_from_identifier(c)
+  print c
+  c2 = windows_identifier_from_filename(q)
+  print c2
+  print c == c2
+  
+  

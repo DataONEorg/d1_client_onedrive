@@ -31,6 +31,7 @@
 import collections
 import logging
 import os
+import platform
 import pprint
 
 # App.
@@ -39,11 +40,11 @@ import os_escape
 
 # Set up logger for this module.
 log = logging.getLogger(__name__)
-#Set level specific for this module if specified
+# Set specific logging level for this module if specified.
 try:
   log.setLevel(logging.getLevelName( \
-               getattr(logging,'ONEDRIVE_MODULES')[__name__]) )
-except:
+               getattr(logging, 'ONEDRIVE_MODULES')[__name__]) )
+except KeyError:
   pass
 
 
@@ -61,3 +62,9 @@ def string_from_path_elements(path):
 def is_root(path):
   return path == ['', '']
 
+
+def os_format(txt):
+  if platform.system() == "Windows":
+    return txt.replace('\n', '\r\n')
+  else:
+    return txt
