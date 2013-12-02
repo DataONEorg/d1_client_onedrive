@@ -204,7 +204,7 @@ FUSE_NOTHREADS = True
 MACFUSE_ICON = make_absolute(os.path.join('impl', 'd1.icon'))
 
 # Mount the filesystem as a local disk, not a network connected disk.
-MACFUSE_LOCAL_DISK = True
+MACFUSE_LOCAL_DISK = True 
 
 # Paths that have special meaning to the operating system and that should be
 # ignored by ONEDrive.
