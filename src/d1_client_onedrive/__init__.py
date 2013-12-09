@@ -21,4 +21,4 @@
 '''DataONE ONEDrive
 '''
 
-__version__ = "2.0.0RC2"
+__version__ = "2.0.1"
