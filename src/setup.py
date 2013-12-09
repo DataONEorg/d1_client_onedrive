@@ -120,7 +120,7 @@ else:
 
 
 # Metadata.
-name = ' dataone.onedrive'
+name = 'dataone.onedrive'
 version = d1_client_onedrive.__version__
 description = 'Filesystem access to the DataONE Workspace'
 author = 'DataONE Project'
