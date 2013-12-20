@@ -31,30 +31,25 @@
 import HTMLParser
 import httplib
 import logging
-import os
-import pprint
 import socket
 import urllib
 import urlparse
 
 # D1.
-import d1_client.solr_client
 import d1_common.const
 import d1_common.date_time
 import d1_common.url
 
 # App.
 import path_exception
-import query_engine_description
 
 
 # Set up logger for this module.
 log = logging.getLogger(__name__)
 # Set specific logging level for this module if specified.
 try:
-  log.setLevel(logging.getLevelName( \
-               getattr(logging, 'ONEDRIVE_MODULES')[__name__]) )
-except KeyError:
+  log.setLevel(logging.getLevelName(logging.ONEDRIVE_MODULES[__name__]))
+except (KeyError, AttributeError):
   pass
 
 
@@ -81,7 +76,7 @@ class SolrConnection(object):
         self._connection.request('GET', abs_query_url, headers=headers)
         response = self._connection.getresponse()
       except (httplib.BadStatusLine,httplib.CannotSendRequest, socket.error,
-              httplib.HTTPException) as e:
+              httplib.HTTPException):
         log.exception(u'Solr query failed (attempt {0}: {1}: Exception:'.format(str(i), query_url))
         self._connection.close()
         self._connection = self._create_connection()
@@ -209,6 +204,7 @@ class SimpleHTMLToText(HTMLParser.HTMLParser):
   def __init__(self):
     self.reset()
     self.fed = []
+    super(SimpleHTMLToText, self).__init__()
 
 
   def get_text(self, html):

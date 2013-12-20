@@ -35,16 +35,15 @@ import logging
 log = logging.getLogger(__name__)
 # Set specific logging level for this module if specified.
 try:
-  log.setLevel(logging.getLevelName( \
-               getattr(logging, 'ONEDRIVE_MODULES')[__name__]) )
-except KeyError:
+  log.setLevel(logging.getLevelName(logging.ONEDRIVE_MODULES[__name__]))
+except (KeyError, AttributeError):
   pass
 
 
 class PathException(Exception):
   def __init__(self, message):
     Exception.__init__(self, message)
-    trace = u', '.join([u'{0}({1})'.format(s[1], s[2]) for s in inspect.stack()[1:5]])  
+    trace = u', '.join([u'{0}({1})'.format(s[1], s[2]) for s in inspect.stack()[1:5]])
     log.debug(u'PathException("{0}"): {1}'.format(message, trace))
 
 

@@ -35,23 +35,19 @@ import logging
 #import logging.config # Needs 2.7.
 import os
 import sys
-import codecs
 import optparse
 import platform
-
-# D1.
-import d1_common.const
 
 # App.
 if not hasattr(sys, 'frozen'):
   sys.path.append(os.path.abspath(os.path.join('__file__', '../..')))
-  
+
 from d1_client_onedrive import settings
 from d1_client_onedrive.impl import check_dependencies
 from d1_client_onedrive.impl.resolver import root
 from d1_client_onedrive.impl import cache_memory as cache
 from d1_client_onedrive.impl import cache_disk
-
+import d1_client_onedrive
 
 # Set up logger for this module.
 log = logging.getLogger(__name__)
@@ -84,7 +80,7 @@ def main():
                         dest=k.upper(), default=v, metavar=v)
 
   (options, arguments) = parser.parse_args()
-  
+
   print(options, arguments)
   #'modules=volicon,iconpath=mac_dataone.icns'
   #options.__dict__['modules']='volicon,iconpath=/Users/brumgard/Documents/Work/Dataone/workspace/onedrive/src/dist/dataone.onedrive.app/Contents/Resources/mac_dataone.icns'
@@ -138,10 +134,10 @@ def main():
   else:
     log.error('Unknown platform: {0}'.format(platform.system()))
     exit()
-    
+
   filesystem_callbacks.run(options, root_resolver)
   log.info("Exiting ONEDrive")
-  
+
 
 def log_setup(options):
   # Set up logging.
@@ -171,7 +167,7 @@ def map_level_string_to_level(level_string):
 
 
 def log_version():
-  log.info('ONEDrive version: {0}'.format(impl.__version__))
+  log.info('ONEDrive version: {0}'.format(d1_client_onedrive.__version__))
 
 
 def log_startup_parameters(options, arguments):

@@ -47,18 +47,16 @@ encoding of the Unicode strings.
 
 # Stdlib.
 import os
-import urllib
 import logging
 
 
 # Set up logger for this module.
 log = logging.getLogger(__name__)
 # Set specific logging level for this module if specified.
-#try:
-#  log.setLevel(logging.getLevelName( \
-#               getattr(logging, 'ONEDRIVE_MODULES')[__name__]) )
-#except KeyError:
-#  pass
+try:
+  log.setLevel(logging.getLevelName(logging.ONEDRIVE_MODULES[__name__]))
+except (KeyError, AttributeError):
+  pass
 
 
 '''Quote and unquote are somewhat borrowed from python urllib standard
@@ -140,5 +138,3 @@ if __name__ == '__main__':
   c2 = windows_identifier_from_filename(q)
   print c2
   print c == c2
-  
-  

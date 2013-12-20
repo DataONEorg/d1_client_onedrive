@@ -31,7 +31,6 @@
 import d1_common.const
 import logging
 import os
-import sys
 
 # D1.
 
@@ -204,7 +203,7 @@ FUSE_NOTHREADS = True
 MACFUSE_ICON = make_absolute(os.path.join('impl', 'd1.icon'))
 
 # Mount the filesystem as a local disk, not a network connected disk.
-MACFUSE_LOCAL_DISK = True 
+MACFUSE_LOCAL_DISK = True
 
 # Paths that have special meaning to the operating system and that should be
 # ignored by ONEDrive.
@@ -220,8 +219,8 @@ IGNORE_SPECIAL = set([
 
 # Set up logging.
 
-## Set the level of logging that should be performed. Choices are:
-## DEBUG, INFO, WARNING, ERROR, CRITICAL or NOTSET.
+# Set the level of logging that should be performed. Choices are:
+# DEBUG, INFO, WARNING, ERROR, CRITICAL or NOTSET.
 if DEBUG:
   LOG_LEVEL = 'DEBUG'
 else:
@@ -233,8 +232,8 @@ else:
 #presence of its __name__ in the list. If not present, then logging will
 #continue at the app global set level for logging.
 logging.ONEDRIVE_MODULES = {
-    '__main__': 'INFO',
-    'impl.drivers.dokan.d1_dokan': 'DEBUG',
+  '__main__': 'INFO',
+  'impl.drivers.dokan.d1_dokan': 'DEBUG',
 }
 
 # Needs Python 2.7

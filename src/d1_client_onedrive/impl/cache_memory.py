@@ -33,7 +33,6 @@
 
 # Stdlib.
 import logging
-import pprint
 
 # App.
 import util
@@ -43,9 +42,8 @@ import util
 log = logging.getLogger(__name__)
 # Set specific logging level for this module if specified.
 try:
-  log.setLevel(logging.getLevelName( \
-               getattr(logging, 'ONEDRIVE_MODULES')[__name__]) )
-except KeyError:
+  log.setLevel(logging.getLevelName(logging.ONEDRIVE_MODULES[__name__]))
+except (KeyError, AttributeError):
   pass
 
 
@@ -85,7 +83,7 @@ class Cache(dict):
 
 
   def copy(self):
-    copyDict = odict()
+    copyDict = dict()
     copyDict._data = self._data.copy()
     copyDict._keys = self._keys[:]
     return copyDict

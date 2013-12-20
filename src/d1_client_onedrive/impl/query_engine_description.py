@@ -29,7 +29,7 @@
 
 # Stdlib.
 import logging
-import os
+import urllib
 
 # 3rd party.
 #import pyxb
@@ -42,9 +42,8 @@ import d1_common.types.generated.dataoneTypes_1_1 as dataoneTypes
 log = logging.getLogger(__name__)
 # Set specific logging level for this module if specified.
 try:
-  log.setLevel(logging.getLevelName( \
-               getattr(logging, 'ONEDRIVE_MODULES')[__name__]) )
-except KeyError:
+  log.setLevel(logging.getLevelName(logging.ONEDRIVE_MODULES[__name__]))
+except (KeyError, AttributeError):
   pass
 
 

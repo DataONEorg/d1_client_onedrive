@@ -28,21 +28,15 @@
 '''
 
 # Stdlib.
-import collections
 import logging
-import os
-
-# App.
-import os_escape
 
 
 # Set up logger for this module.
 log = logging.getLogger(__name__)
 # Set specific logging level for this module if specified.
 try:
-  log.setLevel(logging.getLevelName( \
-               getattr(logging, 'ONEDRIVE_MODULES')[__name__]) )
-except KeyError:
+  log.setLevel(logging.getLevelName(logging.ONEDRIVE_MODULES[__name__]))
+except (KeyError, AttributeError):
   pass
 
 
@@ -60,7 +54,7 @@ class DirectoryItem(object):
   def __unicode__(self):
     return u'DirectoryItem({0}, {1}, {2})'.format(repr(self.name_), self.size_,
                                                   self.is_dir_)
-    
+
   def __str__(self):
     return unicode(self).encode('utf-8')
 
