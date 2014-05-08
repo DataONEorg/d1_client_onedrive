@@ -24,7 +24,8 @@
 
 :Synopsis:
  - Test the TestD1ScienceObjectResolver class.
-:Author: DataONE (Dahl)
+:Author:
+  DataONE (Dahl)
 '''
 
 # Stdlib.

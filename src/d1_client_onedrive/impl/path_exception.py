@@ -24,7 +24,8 @@
 
 :Synopsis:
  - Type that gets raised as exception for invalid paths.
-:Author: DataONE (Dahl)
+:Author:
+  DataONE (Dahl)
 '''
 
 import inspect

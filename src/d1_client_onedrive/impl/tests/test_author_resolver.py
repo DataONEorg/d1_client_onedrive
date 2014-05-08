@@ -24,7 +24,8 @@
 
 :Synopsis:
  - Test the TestAuthorResolver class.
-:Author: DataONE (Dahl)
+:Author:
+  DataONE (Dahl)
 '''
 
 # Stdlib.

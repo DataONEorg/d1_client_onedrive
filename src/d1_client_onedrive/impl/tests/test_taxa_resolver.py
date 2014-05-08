@@ -24,7 +24,8 @@
 
 :Synopsis:
  - Test the ResourceMapResolver class.
-:Taxa: DataONE (Dahl)
+:Author:
+  DataONE (Dahl)
 '''
 
 # Stdlib.
