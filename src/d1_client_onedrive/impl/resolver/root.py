@@ -60,7 +60,7 @@ import resolver_base
 import workspace
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
+#log.setLevel(logging.DEBUG)
 
 
 class RootResolver(resolver_base.Resolver):
