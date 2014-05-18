@@ -74,21 +74,21 @@ def main():
       param_name = '--{0}'.format(k.lower().replace('_', '-'))
       if type(v) is str or type(v) is int:
         parser.add_option(param_name, action='store', type=str(type(v).__name__),
-                          dest=k.upper(), default=v, metavar=v)
+                          dest=k.lower(), default=v, metavar=v)
       elif type(v) is bool:
         if v:
           parser.add_option('--disable-{0}'.format(k.lower().replace('_', '-')),
-            action='store_false', default=True, dest=k.upper(), metavar=v)
+            action='store_false', default=True, dest=k.lower(), metavar=v)
         else:
           parser.add_option(param_name, action='store_true', default=False,
-                            dest=k.upper(), metavar=v)
+                            dest=k.lower(), metavar=v)
 
   (options, arguments) = parser.parse_args()
 
   # Copy non-string/int settings into options.
   for k, v in settings.__dict__.items():
-    if not (isinstance(v, str) or isinstance(v, int)) and k.isupper():
-      options.__dict__[k] = v
+    if not (type(v) is str or type(v) is int or type(v) is bool) and k.isupper():
+      options.__dict__[k.lower()] = v
 
   if len(arguments) > 0:
     parser.print_help()
@@ -96,10 +96,10 @@ def main():
 
   ## Handles the logfile option
   #if options.logfile is not None:
-  #    self._options.LOG_FILE = options.logfile
+  #    self._options.log_file = options.logfile
 
   # Setup logging
-  # logging.config.dictConfig(self._options.LOGGING) # Needs 2.7
+  # logging.config.dictConfig(self._options.logging) # Needs 2.7
   log_setup(options)
 
   if options.version:
@@ -109,10 +109,10 @@ def main():
   #create the caches here and add references to them in options.
   #enables child resolvers to invalidate entries so that
   #changes can be reflected in the listings
-  #options.attribute_cache = cache_disk.DiskCache(options.MAX_ATTRIBUTE_CACHE_SIZE, 'cache_attribute')
-  #options.directory_cache = cache_disk.DiskCache(options.MAX_DIRECTORY_CACHE_SIZE, 'cache_directory')
-  options.attribute_cache = cache.Cache(options.MAX_ATTRIBUTE_CACHE_SIZE)
-  options.directory_cache = cache.Cache(options.MAX_DIRECTORY_CACHE_SIZE)
+  #options.attribute_cache = cache_disk.DiskCache(options.attribute_max_cache_items, 'cache_attribute')
+  #options.directory_cache = cache_disk.DiskCache(options.directory_max_cache_items, 'cache_directory')
+  options.attribute_cache = cache.Cache(options.attribute_max_cache_items)
+  options.directory_cache = cache.Cache(options.directory_max_cache_items)
 
   log.info("Starting ONEDrive...")
   log_startup_parameters(options, arguments)
@@ -127,7 +127,11 @@ def main():
     exit()
 
   # Instantiate the Root resolver.
-  with d1_workspace.workspace.Workspace() as workspace:
+  with d1_workspace.workspace.Workspace(**options.__dict__) as workspace:
+    if options.auto_refresh:
+      log.info('Refreshing workspace...')
+      workspace.refresh()
+      log.info('done')
     root_resolver = root.RootResolver(options, workspace)
     filesystem_callbacks.run(options, root_resolver)
 
@@ -140,26 +144,16 @@ def log_setup(options):
                                 u'(%(lineno)d): %(message)s',
                                 u'%Y-%m-%d %H:%M:%S')
   ## Log to a file
-  #if options.LOG_FILE_PATH is not None:
-  #    file_logger = logging.FileHandler(options.LOG_FILE_PATH, 'a', encoding='UTF-8')
+  #if options.log_file_path is not None:
+  #    file_logger = logging.FileHandler(options.log_file_path, 'a', encoding='UTF-8')
   #    file_logger.setFormatter(formatter)
   #    logging.getLogger('').addHandler(file_logger)
   # Also log to stdout
   console_logger = logging.StreamHandler(sys.stdout)
   console_logger.setFormatter(formatter)
   logging.getLogger().addHandler(console_logger)
-  print options.LOG_LEVEL
-  logging.getLogger().setLevel(getattr(logging, options.LOG_LEVEL.upper()))
-
-
-def map_level_string_to_level(level_string):
-  return {
-    'DEBUG': logging.DEBUG,
-    'INFO': logging.INFO,
-    'WARNING': logging.WARNING,
-    'ERROR': logging.ERROR,
-    'CRITICAL': logging.CRITICAL,
-  }[level_string]
+  print options.log_level
+  logging.getLogger().setLevel(getattr(logging, options.log_level.upper()))
 
 
 def log_version():
