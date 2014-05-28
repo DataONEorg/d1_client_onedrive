@@ -37,9 +37,9 @@ log = logging.getLogger(__name__)
 
 class Attributes(object):
   def __init__(self, size=0, date=None, is_dir=False):
-    self.size_ = size
-    self.date_ = date
-    self.is_dir_ = is_dir
+    self._size_ = size
+    self._date_ = date
+    self._is_dir_ = is_dir
 
 
   def __eq__(self, other):
@@ -51,12 +51,12 @@ class Attributes(object):
 
 
   def size(self):
-    return self.size_
+    return self._size_
 
 
   def date(self):
-    return self.date_
+    return self._date_
 
 
   def is_dir(self):
-    return self.is_dir_
+    return self._is_dir_

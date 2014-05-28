@@ -39,7 +39,6 @@ from datetime import datetime
 # App.
 from d1_client_onedrive.impl import attributes
 from d1_client_onedrive.impl import directory
-from d1_client_onedrive.impl import directory_item
 from d1_client_onedrive.impl import path_exception
 from d1_client_onedrive.impl import util
 import resolver_base
@@ -50,7 +49,7 @@ log = logging.getLogger(__name__)
 #log.setLevel(logging.DEBUG)
 
 
-README_TXT = '''Use FlatSpace to go directly to any DataONE object by typing
+README_TXT = u'''Use FlatSpace to go directly to any DataONE object by typing
 the PID in the path.
 
 E.g.,
@@ -63,7 +62,7 @@ Windows: O:\FlatSpace\MyObjectIdentifier
 class Resolver(resolver_base.Resolver):
   def __init__(self, options, workspace):
     super(Resolver, self).__init__(options, workspace)
-    self.resource_map_resolver = resource_map.Resolver(options, workspace)
+    self._resource_map_resolver = resource_map.Resolver(options, workspace)
     self._readme_txt = util.os_format(README_TXT)
 
 
@@ -73,18 +72,15 @@ class Resolver(resolver_base.Resolver):
       return attributes.Attributes(is_dir=True)
     if self._is_readme_file(path):
       return self._get_readme_file_attributes()
-    return self.resource_map_resolver.get_attributes(workspace_root, path)
+    return self._resource_map_resolver.get_attributes(workspace_root, path)
 
 
   def get_directory(self, workspace_root, path):
     log.debug(u'get_directory: {0}'.format(util.string_from_path_elements(path)))
     if not path:
-      res = []
-      res.append(self._get_readme_directory_item())
-      res.extend([directory_item.DirectoryItem(d) for d in self._workspace.get_unassociated_pids()])
-      return res
+      return [self._get_readme_filename()]
     else:
-      return self.resource_map_resolver.get_directory(workspace_root, path)
+      return self._resource_map_resolver.get_directory(workspace_root, path)
 
 
   def read_file(self, workspace_root, path, size, offset):
@@ -92,4 +88,4 @@ class Resolver(resolver_base.Resolver):
       path), size, offset))
     if self._is_readme_file(path):
       return self._get_readme_text(size, offset)
-    return self.resource_map_resolver.read_file(workspace_root, path, size, offset)
+    return self._resource_map_resolver.read_file(workspace_root, path, size, offset)

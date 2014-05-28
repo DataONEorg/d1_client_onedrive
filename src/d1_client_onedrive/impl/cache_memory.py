@@ -45,7 +45,7 @@ log = logging.getLogger(__name__)
 
 class Cache(dict):
   def __init__(self, max_items):
-    self.max_items = max_items
+    self._max_items = max_items
     self._keys = []
     self._data = {}
 
@@ -57,7 +57,7 @@ class Cache(dict):
   def __setitem__(self, key, value):
     if key not in self._data:
       self._keys.append(key)
-    self.delete_oldest_item_if_full()
+    self._delete_oldest_item_if_full()
     self._data[key] = value
 
 
@@ -91,12 +91,13 @@ class Cache(dict):
     util.log_dump(self._data)
     log.debug('#' * 79)
 
+  # Private.
 
-  def delete_oldest_item_if_full(self):
-    if len(self) == self.max_items:
-      self.delete_oldest_item()
+  def _delete_oldest_item_if_full(self):
+    if len(self) == self._max_items:
+      self._delete_oldest_item()
 
 
-  def delete_oldest_item(self):
+  def _delete_oldest_item(self):
     oldest_key = self._keys[0]
     del self[oldest_key]
