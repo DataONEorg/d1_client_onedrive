@@ -99,12 +99,15 @@ if sys.platform == 'win32':
 elif sys.platform == 'darwin':
   opts = dict(
     py2app = dict(
-     argv_emulation = True,
-     iconfile = 'mac/mac_dataone.icns',
-     packages = ['rdflib', 'lxml'],
-     site_packages = True,
-     resources = ['d1_client_onedrive/impl/d1.icon']
-     #resources = ['mime_mappings.csv',]
+      argv_emulation = True,
+      iconfile = 'mac/mac_dataone.icns',
+      packages = ['rdflib', 'rdfextras', 'lxml'],
+      site_packages = False,
+      resources = ['d1_client_onedrive/impl/d1.icon'],
+      #resources = ['mime_mappings.csv',]
+      plist = dict(
+        LSBackgroundOnly = True,
+      ),
     )
   )
   extra_opts = dict(
@@ -142,13 +145,13 @@ def main():
     license = license,
     # Dependencies that are available through PyPI.
     install_requires = [
-      # ONEDrive uses dataone.common directly but it is also a dependency of
-      # libclient, so we let it be installed by libclient, to avoid the chance
-      # of mismatched versions.
-      #'dataone.libclient == 1.2.5',
-      #'dataone.workspace_client == 0.0.2',
+      # ONEDrive uses dataone.common and dataone.libclient directly but these
+      # are also dependencies of dataone.workspace_client, so they are not
+      # installed directly here, to avoid the chance of mismatched versions.
+      'dataone.workspace_client == 0.0.7',
       'fusepy',
       'rdflib',
+      'rdfextras',
     ],
     data_files = [
       ('d1_client', ['./mime_mappings.csv']),
