@@ -19,7 +19,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-''':mod:`path_exception`
+''':mod:`onedrive_exceptions`
 ========================
 
 :Synopsis:
@@ -41,6 +41,13 @@ class PathException(Exception):
     Exception.__init__(self, message)
     trace = u', '.join([u'{0}({1})'.format(s[1], s[2]) for s in inspect.stack()[1:5]])
     log.debug(u'PathException("{0}"): {1}'.format(message, trace))
+
+
+class ONEDriveException(Exception):
+  def __init__(self, message):
+    Exception.__init__(self, message)
+    trace = u', '.join([u'{0}({1})'.format(s[1], s[2]) for s in inspect.stack()[1:5]])
+    log.debug(u'ONEDriveException("{0}"): {1}'.format(message, trace))
 
 
 class NoResultException(Exception):
