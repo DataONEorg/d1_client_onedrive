@@ -34,12 +34,18 @@ import unittest
 import pprint
 
 # D1.
+sys.path.append('../..')
+
 import d1_client.cnclient_1_1
+import command_echoer
+import impl.clients.onedrive_solr_client as onedrive_solr_client
+import command_echoer
+from object_tree_test_sample import object_tree
 
-# App.
-sys.path.append('..')
-import onedrive_solr_client
+options = {}
 
+class O():
+  pass
 
 # Example results
 
@@ -322,9 +328,17 @@ class O():
 class TestSolrClient(unittest.TestCase):
   def setUp(self):
     options = O()
-    options.BASE_URL = 'https://localhost/'
+    options.base_url = 'https://localhost/'
+    options.solr_query_path = ''
+    options.solr_query_timeout = 30
+    options.max_objects_for_query = 10
     self.c = onedrive_solr_client.SolrClient(options)
 
+
+  def test_050_instantiate(self):
+    pass
+
+  #  r = self.c.parse_result_dict(example_query_result_1)
 
   #def _test_300_parse_result(self):
   #  r = self.c.parse_result_dict(example_query_result_1)
